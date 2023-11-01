@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:goat",
+  "meats": [
+    {
+      "item": "minecraft:goat_horn"
+    }
+  ]
+}

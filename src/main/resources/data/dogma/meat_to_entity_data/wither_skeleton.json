@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:wither_skeleton",
+  "meats": [
+    {
+      "item": "minecraft:wither_skeleton_skull"
+    }
+  ]
+}

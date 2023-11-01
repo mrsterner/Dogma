@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:pufferfish",
+  "meats": [
+    {
+      "item": "minecraft:pufferfish"
+    }
+  ]
+}

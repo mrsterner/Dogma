@@ -1,0 +1,14 @@
+{
+  "entity_type": "minecraft:chicken",
+  "meats": [
+    {
+      "item": "minecraft:cooked_chicken"
+    },
+    {
+      "item": "minecraft:chicken"
+    },
+    {
+      "item": "minecraft:feather"
+    }
+  ]
+}

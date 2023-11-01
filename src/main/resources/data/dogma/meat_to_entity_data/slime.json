@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:slime",
+  "meats": [
+    {
+      "item": "minecraft:slime_ball"
+    }
+  ]
+}

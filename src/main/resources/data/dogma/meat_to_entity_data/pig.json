@@ -1,0 +1,11 @@
+{
+  "entity_type": "minecraft:pig",
+  "meats": [
+    {
+      "item": "minecraft:cooked_porkchop"
+    },
+    {
+      "item": "minecraft:porkchop"
+    }
+  ]
+}

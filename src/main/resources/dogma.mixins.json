@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "dev.sterner.dogma.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "dogma.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8.5"
+}

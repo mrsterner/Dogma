@@ -1,0 +1,14 @@
+{
+  "entity_type": "minecraft:cow",
+  "meats": [
+    {
+      "item": "minecraft:cooked_beef"
+    },
+    {
+      "item": "minecraft:beef"
+    },
+    {
+      "item": "minecraft:leather"
+    }
+  ]
+}

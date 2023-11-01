@@ -1,0 +1,11 @@
+{
+  "entity_type": "minecraft:sheep",
+  "meats": [
+    {
+      "item": "minecraft:cooked_mutton"
+    },
+    {
+      "item": "minecraft:mutton"
+    }
+  ]
+}

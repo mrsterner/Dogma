@@ -1,0 +1,11 @@
+{
+  "entity_type": "minecraft:spider",
+  "meats": [
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "item": "minecraft:fermented_spider_eye"
+    }
+  ]
+}

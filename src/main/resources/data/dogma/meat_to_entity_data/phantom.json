@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:phantom",
+  "meats": [
+    {
+      "item": "minecraft:phantom_membrane"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "entity_type": "minecraft:salmon",
+  "meats": [
+    {
+      "item": "minecraft:cooked_salmon"
+    },
+    {
+      "item": "minecraft:salmon"
+    }
+  ]
+}

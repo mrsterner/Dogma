@@ -1,0 +1,17 @@
+{
+  "entity_type": "minecraft:rabbit",
+  "meats": [
+    {
+      "item": "minecraft:cooked_rabbit"
+    },
+    {
+      "item": "minecraft:rabbit"
+    },
+    {
+      "item": "minecraft:rabbit_hide"
+    },
+    {
+      "item": "minecraft:rabbit_foot"
+    }
+  ]
+}

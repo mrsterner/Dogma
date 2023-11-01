@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:piglin",
+  "meats": [
+    {
+      "item": "minecraft:piglin_head"
+    }
+  ]
+}

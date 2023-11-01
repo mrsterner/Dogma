@@ -1,0 +1,8 @@
+{
+  "entity_type": "minecraft:enderman",
+  "meats": [
+    {
+      "item": "minecraft:ender_pearl"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "entity_type": "minecraft:zombie",
+  "meats": [
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:zombie_head"
+    }
+  ]
+}

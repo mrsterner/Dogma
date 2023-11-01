@@ -1,0 +1,11 @@
+{
+  "entity_type": "minecraft:creeper",
+  "meats": [
+    {
+      "item": "minecraft:gunpowder"
+    },
+    {
+      "item": "minecraft:creeper_head"
+    }
+  ]
+}
