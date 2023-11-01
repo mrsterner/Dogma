@@ -21,8 +21,8 @@ public class HookBlockEntity extends BaseButcherBlockEntity {
     public void tick(Level world, BlockPos pos, BlockState state) {
         boolean mark = false;
 
-        if (world != null && !world.isClient) {
-            if (world.getTime() % 20 == 0 && !storedCorpseNbt.isEmpty()) {
+        if (world != null && !world.isClientSide) {
+            if (world.getDayTime() % 20 == 0 && !storedCorpseNbt.isEmpty()) {
                 mark = true;
                 if (hookedAge < Constants.Values.BLEEDING) {
                     hookedAge++;
@@ -35,7 +35,7 @@ public class HookBlockEntity extends BaseButcherBlockEntity {
             }
         }
         if (mark) {
-            markDirty();
+            setChanged();
         }
     }
 

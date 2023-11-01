@@ -3,14 +3,18 @@ package dev.sterner.dogma.foundation.registry;
 import dev.sterner.dogma.Dogma;
 import dev.sterner.dogma.api.AbstractSkullBlock;
 import dev.sterner.dogma.api.MobEffectItem;
+import dev.sterner.dogma.content.block.CandleBlock;
 import dev.sterner.dogma.content.block.DebugWandItem;
+import dev.sterner.dogma.content.block.SkullBlock;
 import dev.sterner.dogma.content.block_entity.abyss.CurseWardingBoxBlockEntity;
 import dev.sterner.dogma.content.item.abyss.LifeReverberatingStoneItem;
 import dev.sterner.dogma.content.item.abyss.StarCompassItem;
 import dev.sterner.dogma.content.item.necro.*;
+import net.minecraft.core.Direction;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.WallBannerBlock;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -93,25 +97,25 @@ public interface DogmaItemRegistry {
     RegistryObject<Item> EYE = ITEMS.register("eye", () -> new Item(settings()));
     RegistryObject<Item> BOTTLE_OF_BLOOD = ITEMS.register("bottle_of_blood", () -> new Item(settings()));
 
-    RegistryObject<Item> VILLAGER_HEAD = ITEMS.registerWallStanding("villager_head", () -> new BotDSkullBlock(AbstractSkullBlock.Type.VILLAGER, ), DogmaBlockRegistry.VILLAGER_WALL_HEAD, settings(), true);
+    RegistryObject<Item> VILLAGER_HEAD = ITEMS.register("villager_head", () -> new StandingAndWallBlockItem(DogmaBlockRegistry.VILLAGER_HEAD.get(), DogmaBlockRegistry.VILLAGER_WALL_HEAD.get(), settings(), Direction.DOWN));
 
-    RegistryObject<Item> CANDLE = ITEMS.registerWallStanding("candle", () -> new CandleBlock(QuiltBlockSettings.of(Material.DECORATION)), DogmaBlockRegistry.CANDLE_WALL, settings(), true);
+    RegistryObject<Item> CANDLE = ITEMS.register("candle", () -> new StandingAndWallBlockItem(DogmaBlockRegistry.CANDLE.get(), DogmaBlockRegistry.CANDLE_WALL.get(), settings(), Direction.DOWN));
 
-    RegistryObject<Item> BRAIN = ITEMS.register("brain", () -> new BrainBlock(, settings()));
+    RegistryObject<Item> BRAIN = ITEMS.register("brain", () -> new BlockItem(DogmaBlockRegistry.BRAIN.get(), settings()));
     RegistryObject<Item> HEART = ITEMS.register("heart", () -> new Item(settings()));
 
-    RegistryObject<Item> RETORT_FLASK = ITEMS.register("retort_flask", () -> new BlockItem(DogmaBlockRegistry.RETORT_FLASK_BLOCK, settings()));
+    //RegistryObject<Item> RETORT_FLASK = ITEMS.register("retort_flask", () -> new BlockItem(DogmaBlockRegistry.RETORT_FLASK_BLOCK, settings()));
 
 
     RegistryObject<Item> POPPY_POD = ITEMS.register("poppy_pod", () -> new Item(settings()));
-    RegistryObject<Item> POPPY_SEEDS = ITEMS.register("poppy_seeds", () -> new ItemNameBlockItem(DogmaBlockRegistry.POPPY_CROP, settings()));
+    RegistryObject<Item> POPPY_SEEDS = ITEMS.register("poppy_seeds", () -> new ItemNameBlockItem(DogmaBlockRegistry.POPPY_CROP.get(), settings()));
 
     RegistryObject<Item> SULFUR = ITEMS.register("sulfur", () -> new Item(settings()));
 
-    RegistryObject<Item> JAR = ITEMS.register("jar", () -> new JarBlock(, settings()));
-    RegistryObject<Item> PEDESTAL = ITEMS.register("pedestal", () -> new PedestalBlock(, settings(), true);
-    RegistryObject<Item> REINFORCED_DOOR = ITEMS.register("reinforced_door", () -> new ReinforcedDoorBlock(, settings());
-    RegistryObject<Item> REINFORCED_BLOCK = ITEMS.register("reinforced_block", () -> new BlockItem());
+    RegistryObject<Item> JAR = ITEMS.register("jar", () -> new BlockItem(DogmaBlockRegistry.JAR.get(), settings()));
+    RegistryObject<Item> PEDESTAL = ITEMS.register("pedestal", () -> new BlockItem(DogmaBlockRegistry.PEDESTAL.get(), settings()));
+    //RegistryObject<Item> REINFORCED_DOOR = ITEMS.register("reinforced_door", () -> new ReinforcedDoorBlock(, settings());
+    //RegistryObject<Item> REINFORCED_BLOCK = ITEMS.register("reinforced_block", () -> new BlockItem());
 
     //end necro
     //------------------------------------------------

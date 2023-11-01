@@ -21,6 +21,8 @@ public interface DogmaDamageSources {
     //end abyss
     //------------------------------------------------
     //start necro
+    ResourceKey<DamageType> SANGUINE = ResourceKey.create(Registries.DAMAGE_TYPE, Dogma.id("sanguine"));
+    ResourceKey<DamageType> SACRIFICE = ResourceKey.create(Registries.DAMAGE_TYPE, Dogma.id("sacrifice"));
 
     //end necro
     //------------------------------------------------

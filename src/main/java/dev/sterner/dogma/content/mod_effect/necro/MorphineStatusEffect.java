@@ -1,7 +1,10 @@
 package dev.sterner.dogma.content.mod_effect.necro;
 
+import dev.sterner.dogma.foundation.capability.necro.NecroLivingEntityDataCapability;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
 
 public class MorphineStatusEffect extends MobEffect {
     public MorphineStatusEffect() {
@@ -9,11 +12,11 @@ public class MorphineStatusEffect extends MobEffect {
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        LivingEntityDataComponent component = BotDComponents.LIVING_COMPONENT.get(entity);
-        entity.damage(entity.getDamageSources().generic(), component.getMorphine$accumulatedDamage());
-        component.setMorphine$accumulatedDamage(0.0F);
+    public void removeAttributeModifiers(LivingEntity pLivingEntity, AttributeMap pAttributeMap, int pAmplifier) {
+        NecroLivingEntityDataCapability capability = NecroLivingEntityDataCapability.getCapability(pLivingEntity);
+        pLivingEntity.hurt(pLivingEntity.level().damageSources().generic(), capability.getMorphine$accumulatedDamage());
+        capability.setMorphine$accumulatedDamage(0.0F);
 
-        super.onRemoved(entity, attributes, amplifier);
+        super.removeAttributeModifiers(pLivingEntity, pAttributeMap, pAmplifier);
     }
 }

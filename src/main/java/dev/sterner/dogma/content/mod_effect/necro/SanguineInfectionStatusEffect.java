@@ -1,7 +1,15 @@
 package dev.sterner.dogma.content.mod_effect.necro;
 
+import dev.sterner.dogma.foundation.DogmaDamageSources;
+import dev.sterner.dogma.foundation.registry.DogmaMobEffects;
+import dev.sterner.dogma.foundation.registry.DogmaParticleTypeRegistry;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 
 public class SanguineInfectionStatusEffect extends MobEffect {
     public SanguineInfectionStatusEffect() {
@@ -9,24 +17,24 @@ public class SanguineInfectionStatusEffect extends MobEffect {
     }
 
     @Override
-    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-        super.applyUpdateEffect(entity, amplifier);
-        entity.damage(BotDDamageTypes.getDamageSource(entity.getWorld(), BotDDamageTypes.SANGUINE), 2.0F);
-        entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLOCK_HONEY_BLOCK_BREAK, SoundCategory.PLAYERS, 2, 1);
-        var rand = entity.getRandom();
+    public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
+        super.applyEffectTick(pLivingEntity, pAmplifier);
+        pLivingEntity.hurt(DogmaDamageSources.create(pLivingEntity.level(), DogmaDamageSources.SANGUINE), 2.0F);
+        pLivingEntity.level().playSound(null, pLivingEntity.getX(), pLivingEntity.getY(), pLivingEntity.getZ(), SoundEvents.HONEY_BLOCK_BREAK, SoundSource.PLAYERS, 2, 1);
+        var rand = pLivingEntity.getRandom();
         for (int i = 0; i < 24; ++i) {
-            double x = entity.getParticleX(0.5);
-            double y = entity.getY() + rand.nextDouble() * 2;
-            double z = entity.getParticleZ(0.5);
+            double x = pLivingEntity.getRandomX(0.5);
+            double y = pLivingEntity.getY() + rand.nextDouble() * 2;
+            double z = pLivingEntity.getRandomZ(0.5);
 
             double dx = (rand.nextFloat() / 2.0F);
             double dy = 5.0E-5;
             double dz = (rand.nextFloat() / 2.0F);
-            entity.world.addParticle(BotDParticleTypes.SPLASHING_BLOOD, x, y, z, dx, dy, dz);
+            pLivingEntity.level().addParticle(DogmaParticleTypeRegistry.SPLASHING_BLOOD.get(), x, y, z, dx, dy, dz);
         }
 
-        for (StatusEffectInstance statusEffectInstance : entity.getStatusEffects()) {
-            if (statusEffectInstance.getEffectType() == StatusEffects.POISON || statusEffectInstance.getEffectType() == StatusEffects.WITHER || statusEffectInstance.getEffectType() == BotDStatusEffects.SANGUINE) {
+        for (MobEffectInstance statusEffectInstance : pLivingEntity.getActiveEffects()) {
+            if (statusEffectInstance.getEffect() == MobEffects.POISON || statusEffectInstance.getEffect() == MobEffects.WITHER || statusEffectInstance.getEffect() == DogmaMobEffects.SANGUINE.get()) {
                 if (statusEffectInstance.getDuration() > 20 * 2) {
                     statusEffectInstance.duration = statusEffectInstance.getDuration() / 2;
                 }
@@ -35,10 +43,10 @@ public class SanguineInfectionStatusEffect extends MobEffect {
     }
 
     @Override
-    public boolean canApplyUpdateEffect(int duration, int amplifier) {
-        int i = 40 >> amplifier;
+    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+        int i = 40 >> pAmplifier;
         if (i > 0) {
-            return duration % i == 0;
+            return pDuration % i == 0;
         } else {
             return true;
         }

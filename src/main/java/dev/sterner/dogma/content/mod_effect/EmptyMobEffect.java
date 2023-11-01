@@ -5,6 +5,6 @@ import net.minecraft.world.effect.MobEffectCategory;
 
 public class EmptyMobEffect extends MobEffect {
     public EmptyMobEffect() {
-        super(pCategory, pColor);
+        super(MobEffectCategory.NEUTRAL, 0xffffff);
     }
 }
