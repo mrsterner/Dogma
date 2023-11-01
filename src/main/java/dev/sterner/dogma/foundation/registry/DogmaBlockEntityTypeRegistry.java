@@ -3,6 +3,7 @@ package dev.sterner.dogma.foundation.registry;
 import dev.sterner.dogma.Dogma;
 import dev.sterner.dogma.api.BookBlockEntity;
 import dev.sterner.dogma.api.SkullBlockEntity;
+import dev.sterner.dogma.content.block_entity.PedestalBlockEntity;
 import dev.sterner.dogma.content.block_entity.abyss.CurseWardingBoxBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -21,6 +22,17 @@ public interface DogmaBlockEntityTypeRegistry {
                             null//TODO add blocks
                     ).build(null)
             );
+
+    RegistryObject<BlockEntityType<PedestalBlockEntity>> ITEM_PEDESTAL =
+            BLOCK_ENTITY_TYPES.register("skull",
+                    () -> BlockEntityType.Builder.of(
+                            PedestalBlockEntity::new,
+                            DogmaBlockRegistry.PEDESTAL.get()
+                    ).build(null)
+            );
+
+
+
     //end common
     //------------------------------------------------
     //start abyss

@@ -4,7 +4,7 @@ import dev.sterner.dogma.Dogma;
 import dev.sterner.dogma.foundation.Constants;
 import dev.sterner.dogma.foundation.DogmaPackets;
 import dev.sterner.dogma.foundation.abyss.abyss.Abyss;
-import dev.sterner.dogma.foundation.networking.SyncLevelCapabilityPacket;
+import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLevelCapabilityPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -83,6 +83,6 @@ public class AbyssLevelDataCapability implements LodestoneCapability {
     public static void sync(Level level) {
         getCapabilityOptional(level).ifPresent(
                 c -> DogmaPackets.DOGMA_CHANNEL.send(PacketDistributor.DIMENSION.with(level::dimension),
-                        new SyncLevelCapabilityPacket(c.serializeNBT())));
+                        new SyncAbyssLevelCapabilityPacket(c.serializeNBT())));
     }
 }

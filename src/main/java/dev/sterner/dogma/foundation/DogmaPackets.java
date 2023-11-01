@@ -1,8 +1,12 @@
 package dev.sterner.dogma.foundation;
 
 import dev.sterner.dogma.Dogma;
-import dev.sterner.dogma.foundation.networking.SyncLevelCapabilityPacket;
-import dev.sterner.dogma.foundation.networking.SyncLivingCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.SyncPlayerCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLevelCapabilityPacket;
+import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLivingCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.necro.SyncNecroCorpseCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.necro.SyncNecroLivingCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.necro.SyncNecroPlayerCapabilityDataPacket;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -19,7 +23,16 @@ public class DogmaPackets {
     public static void registerNetworkStuff(FMLCommonSetupEvent event) {
         int index = 0;
 
-        SyncLivingCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
-        SyncLevelCapabilityPacket.register(DOGMA_CHANNEL, index++);
+        //Abyss
+        SyncAbyssLivingCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
+        SyncAbyssLevelCapabilityPacket.register(DOGMA_CHANNEL, index++);
+
+        //Necro
+        SyncNecroCorpseCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
+        SyncNecroLivingCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
+        SyncNecroPlayerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
+
+        //Core
+        SyncPlayerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
     }
 }

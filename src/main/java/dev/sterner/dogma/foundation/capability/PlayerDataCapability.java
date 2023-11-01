@@ -1,38 +1,25 @@
 package dev.sterner.dogma.foundation.capability;
 
 import dev.sterner.dogma.Dogma;
-import dev.sterner.dogma.foundation.Constants;
 import dev.sterner.dogma.foundation.DogmaPackets;
-import dev.sterner.dogma.foundation.abyss.curse.Curse;
-import dev.sterner.dogma.foundation.abyss.curse.CurseIntensity;
-import dev.sterner.dogma.foundation.handler.abyss.CurseHandler;
-import dev.sterner.dogma.foundation.networking.SyncLivingCapabilityDataPacket;
-import dev.sterner.dogma.foundation.registry.DogmaRegistries;
-import net.minecraft.core.BlockPos;
+import dev.sterner.dogma.foundation.networking.SyncPlayerCapabilityDataPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.network.PacketDistributor;
-import org.checkerframework.checker.units.qual.A;
 import team.lodestar.lodestone.systems.capability.LodestoneCapability;
 import team.lodestar.lodestone.systems.capability.LodestoneCapabilityProvider;
 
@@ -63,7 +50,7 @@ public class PlayerDataCapability implements LodestoneCapability {
     }
 
     public static void attachEntityCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof LivingEntity) {
+        if (event.getObject() instanceof Player) {
             final PlayerDataCapability capability = new PlayerDataCapability();
             event.addCapability(Dogma.id("player_data"), new LodestoneCapabilityProvider<>(PlayerDataCapability.CAPABILITY, () -> capability));
         }
@@ -81,18 +68,43 @@ public class PlayerDataCapability implements LodestoneCapability {
         Ability.readAbilitiesFromNbt(nbt, abilityList);
     }
 
-    public static void syncEntityCapability(PlayerEvent.StartTracking event) {
-        if (event.getTarget() instanceof LivingEntity livingEntity) {
-            if (livingEntity.level() instanceof ServerLevel) {
-                PlayerDataCapability.sync(livingEntity);
+    //-----------------OBLIGATORY_PLAYER_IMPLEMENTATION-----------------
+    public static void playerJoin(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                syncSelf(serverPlayer);
             }
         }
     }
 
-    public static void sync(LivingEntity entity) {
-        getCapabilityOptional(entity).ifPresent(
-                c -> DogmaPackets.DOGMA_CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity),
-                        new SyncLivingCapabilityDataPacket(entity.getId(), c.serializeNBT())));
+    public static void playerClone(PlayerEvent.Clone event) {
+        PlayerDataCapability originalCapability = PlayerDataCapability.getCapabilityOptional(event.getOriginal()).orElse(new PlayerDataCapability());
+        PlayerDataCapability capability = PlayerDataCapability.getCapabilityOptional(event.getEntity()).orElse(new PlayerDataCapability());
+        capability.deserializeNBT(originalCapability.serializeNBT());
+    }
+
+    public static void syncPlayerCapability(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof Player player) {
+            if (player.level() instanceof ServerLevel) {
+                syncTracking(player);
+            }
+        }
+    }
+
+    public static void syncSelf(ServerPlayer player) {
+        sync(player, PacketDistributor.PLAYER.with(() -> player));
+    }
+
+    public static void syncTrackingAndSelf(Player player) {
+        sync(player, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player));
+    }
+
+    public static void syncTracking(Player player) {
+        sync(player, PacketDistributor.TRACKING_ENTITY.with(() -> player));
+    }
+
+    public static void sync(Player player, PacketDistributor.PacketTarget target) {
+        getCapabilityOptional(player).ifPresent(c -> DogmaPackets.DOGMA_CHANNEL.send(target, new SyncPlayerCapabilityDataPacket(player.getUUID(), c.serializeNBT())));
     }
 
     public static LazyOptional<PlayerDataCapability> getCapabilityOptional(LivingEntity entity) {
@@ -102,6 +114,7 @@ public class PlayerDataCapability implements LodestoneCapability {
     public static PlayerDataCapability getCapability(LivingEntity entity) {
         return entity.getCapability(CAPABILITY).orElse(new PlayerDataCapability());
     }
+    //----------END_OF_OBLIGATORY_PLAYER_IMPLEMENTATION-----------------
 
     public static class Ability {
         private final Type type;

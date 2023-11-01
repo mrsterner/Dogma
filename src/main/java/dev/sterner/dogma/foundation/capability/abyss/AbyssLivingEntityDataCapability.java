@@ -6,10 +6,9 @@ import dev.sterner.dogma.foundation.DogmaDamageSources;
 import dev.sterner.dogma.foundation.DogmaPackets;
 import dev.sterner.dogma.foundation.handler.abyss.CradleHandler;
 import dev.sterner.dogma.foundation.handler.abyss.CurseHandler;
-import dev.sterner.dogma.foundation.networking.SyncLivingCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLivingCapabilityDataPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -138,7 +137,7 @@ public class AbyssLivingEntityDataCapability implements LodestoneCapability {
     public static void sync(LivingEntity entity) {
         getCapabilityOptional(entity).ifPresent(
                 c -> DogmaPackets.DOGMA_CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity),
-                        new SyncLivingCapabilityDataPacket(entity.getId(), c.serializeNBT())));
+                        new SyncAbyssLivingCapabilityDataPacket(entity.getId(), c.serializeNBT())));
     }
 
     public static LazyOptional<AbyssLivingEntityDataCapability> getCapabilityOptional(LivingEntity entity) {

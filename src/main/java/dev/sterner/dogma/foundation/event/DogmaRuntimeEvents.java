@@ -3,6 +3,8 @@ package dev.sterner.dogma.foundation.event;
 import dev.sterner.dogma.foundation.capability.PlayerDataCapability;
 import dev.sterner.dogma.foundation.capability.abyss.AbyssLevelDataCapability;
 import dev.sterner.dogma.foundation.capability.abyss.AbyssLivingEntityDataCapability;
+import dev.sterner.dogma.foundation.capability.necro.NecroCorpseDataCapability;
+import dev.sterner.dogma.foundation.capability.necro.NecroLivingEntityDataCapability;
 import dev.sterner.dogma.foundation.capability.necro.NecroPlayerDataCapability;
 import dev.sterner.dogma.foundation.handler.abyss.CradleHandler;
 import dev.sterner.dogma.foundation.handler.abyss.CurseHandler;
@@ -11,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -27,6 +30,8 @@ public class DogmaRuntimeEvents {
         AbyssLivingEntityDataCapability.attachEntityCapability(event);
         NecroPlayerDataCapability.attachEntityCapability(event);
         PlayerDataCapability.attachEntityCapability(event);
+        NecroCorpseDataCapability.attachEntityCapability(event);
+        NecroLivingEntityDataCapability.attachEntityCapability(event);
     }
 
     @SubscribeEvent
@@ -49,8 +54,22 @@ public class DogmaRuntimeEvents {
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
         AbyssLivingEntityDataCapability.syncEntityCapability(event);
-        NecroPlayerDataCapability.syncEntityCapability(event);
-        PlayerDataCapability.syncEntityCapability(event);
+        NecroPlayerDataCapability.syncPlayerCapability(event);
+        PlayerDataCapability.syncPlayerCapability(event);
+        NecroCorpseDataCapability.syncEntityCapability(event);
+        NecroLivingEntityDataCapability.syncEntityCapability(event);
+    }
+
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        PlayerDataCapability.playerJoin(event);
+        NecroPlayerDataCapability.playerJoin(event);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        PlayerDataCapability.playerClone(event);
+        NecroPlayerDataCapability.playerClone(event);
     }
 
     @SubscribeEvent

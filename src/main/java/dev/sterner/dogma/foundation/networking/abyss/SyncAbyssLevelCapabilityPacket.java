@@ -1,4 +1,4 @@
-package dev.sterner.dogma.foundation.networking;
+package dev.sterner.dogma.foundation.networking.abyss;
 
 import dev.sterner.dogma.foundation.capability.abyss.AbyssLevelDataCapability;
 import net.minecraft.client.Minecraft;
@@ -12,11 +12,11 @@ import team.lodestar.lodestone.systems.network.LodestoneClientPacket;
 
 import java.util.function.Supplier;
 
-public class SyncLevelCapabilityPacket extends LodestoneClientPacket {
+public class SyncAbyssLevelCapabilityPacket extends LodestoneClientPacket {
     private final CompoundTag tag;
 
 
-    public SyncLevelCapabilityPacket(CompoundTag tag) {
+    public SyncAbyssLevelCapabilityPacket(CompoundTag tag) {
         this.tag = tag;
     }
 
@@ -32,10 +32,10 @@ public class SyncLevelCapabilityPacket extends LodestoneClientPacket {
     }
 
     public static void register(SimpleChannel instance, int index) {
-        instance.registerMessage(index, SyncLevelCapabilityPacket.class, SyncLevelCapabilityPacket::encode, SyncLevelCapabilityPacket::decode, SyncLevelCapabilityPacket::handle);
+        instance.registerMessage(index, SyncAbyssLevelCapabilityPacket.class, SyncAbyssLevelCapabilityPacket::encode, SyncAbyssLevelCapabilityPacket::decode, SyncAbyssLevelCapabilityPacket::handle);
     }
 
-    public static SyncLevelCapabilityPacket decode(FriendlyByteBuf buf) {
-        return new SyncLevelCapabilityPacket(buf.readNbt());
+    public static SyncAbyssLevelCapabilityPacket decode(FriendlyByteBuf buf) {
+        return new SyncAbyssLevelCapabilityPacket(buf.readNbt());
     }
 }
