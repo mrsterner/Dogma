@@ -21,7 +21,7 @@ public class JarBlock extends BaseEntityBlock {
 
     public JarBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(OPEN, false));
+        this.registerDefaultState(this.stateDefinition.any().with(OPEN, false));
     }
 
 

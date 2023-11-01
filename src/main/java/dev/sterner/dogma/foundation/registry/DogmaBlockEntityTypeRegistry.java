@@ -3,8 +3,10 @@ package dev.sterner.dogma.foundation.registry;
 import dev.sterner.dogma.Dogma;
 import dev.sterner.dogma.api.BookBlockEntity;
 import dev.sterner.dogma.api.SkullBlockEntity;
+import dev.sterner.dogma.content.block.necro.HookBlockEntity;
 import dev.sterner.dogma.content.block_entity.PedestalBlockEntity;
 import dev.sterner.dogma.content.block_entity.abyss.CurseWardingBoxBlockEntity;
+import dev.sterner.dogma.content.block_entity.necro.BrainBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -19,12 +21,12 @@ public interface DogmaBlockEntityTypeRegistry {
             BLOCK_ENTITY_TYPES.register("skull",
                     () -> BlockEntityType.Builder.of(
                             SkullBlockEntity::new,
-                            null//TODO add blocks
+                            DogmaBlockRegistry.VILLAGER_HEAD.get(), DogmaBlockRegistry.VILLAGER_WALL_HEAD.get()
                     ).build(null)
             );
 
     RegistryObject<BlockEntityType<PedestalBlockEntity>> ITEM_PEDESTAL =
-            BLOCK_ENTITY_TYPES.register("skull",
+            BLOCK_ENTITY_TYPES.register("item_pedestal",
                     () -> BlockEntityType.Builder.of(
                             PedestalBlockEntity::new,
                             DogmaBlockRegistry.PEDESTAL.get()
@@ -51,6 +53,22 @@ public interface DogmaBlockEntityTypeRegistry {
                     () -> BlockEntityType.Builder.of(
                             BookBlockEntity::new,
                             DogmaBlockRegistry.BOOK_OF_THE_DEAD.get()
+                    ).build(null)
+            );
+
+    RegistryObject<BlockEntityType<BrainBlockEntity>> BRAIN =
+            BLOCK_ENTITY_TYPES.register("brain",
+                    () -> BlockEntityType.Builder.of(
+                            BrainBlockEntity::new,
+                            DogmaBlockRegistry.BRAIN.get()
+                    ).build(null)
+            );
+
+    RegistryObject<BlockEntityType<HookBlockEntity>> HOOK =
+            BLOCK_ENTITY_TYPES.register("hook",
+                    () -> BlockEntityType.Builder.of(
+                            HookBlockEntity::new,
+                            DogmaBlockRegistry.HOOK_BLOCK.get(), DogmaBlockRegistry.METAL_HOOK_BLOCK.get()
                     ).build(null)
             );
     //end necro

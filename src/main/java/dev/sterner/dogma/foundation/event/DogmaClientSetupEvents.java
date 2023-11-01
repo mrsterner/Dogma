@@ -4,6 +4,7 @@ import dev.sterner.dogma.client.layer.abyss.CradleRenderLayer;
 import dev.sterner.dogma.client.renderer.abyss.block.CurseWardingBoxBlockEntityRenderer;
 import dev.sterner.dogma.client.renderer.abyss.gui.hud.CurseHudRenderer;
 import dev.sterner.dogma.foundation.registry.DogmaBlockEntityTypeRegistry;
+import dev.sterner.dogma.foundation.registry.DogmaParticleTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,6 +39,11 @@ public class DogmaClientSetupEvents {
     @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(DogmaBlockEntityTypeRegistry.CURSE_WARDING_BOX.get(), CurseWardingBoxBlockEntityRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerParticleFactory(RegisterParticleProvidersEvent event) {
+        DogmaParticleTypeRegistry.registerParticleFactory(event);
     }
 
     @SubscribeEvent

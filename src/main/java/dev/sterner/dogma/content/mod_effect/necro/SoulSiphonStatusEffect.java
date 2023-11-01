@@ -1,8 +1,11 @@
 package dev.sterner.dogma.content.mod_effect.necro;
 
-public class SoulSiphonStatusEffect extends StatusEffect {
-    public SoulSiphonStatusEffect(StatusEffectType type) {
-        super(type, 0x91db69);
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+
+public class SoulSiphonStatusEffect extends MobEffect {
+    public SoulSiphonStatusEffect() {
+        super(MobEffectCategory.NEUTRAL, 0x91db69);
     }
 
     @Override

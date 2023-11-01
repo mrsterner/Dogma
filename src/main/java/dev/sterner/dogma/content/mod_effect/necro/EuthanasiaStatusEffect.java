@@ -8,8 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 
 public class EuthanasiaStatusEffect extends MobEffect {
-    public EuthanasiaStatusEffect(MobEffectCategory pCategory, int pColor) {
-        super(pCategory, pColor);
+    public EuthanasiaStatusEffect() {
+        super(MobEffectCategory.NEUTRAL, 0xffffff);
     }
 
     @Override

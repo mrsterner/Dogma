@@ -4,8 +4,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 
 public class MorphineStatusEffect extends MobEffect {
-    public MorphineStatusEffect(MobEffectCategory pCategory, int pColor) {
-        super(pCategory, pColor);
+    public MorphineStatusEffect() {
+        super(MobEffectCategory.NEUTRAL, 0xffffff);
     }
 
     @Override

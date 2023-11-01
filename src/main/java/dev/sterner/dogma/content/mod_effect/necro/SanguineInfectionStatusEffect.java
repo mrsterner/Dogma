@@ -1,8 +1,11 @@
 package dev.sterner.dogma.content.mod_effect.necro;
 
-public class SanguineInfectionStatusEffect extends StatusEffect {
-    public SanguineInfectionStatusEffect(StatusEffectType type) {
-        super(type, 0xbd0000);
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+
+public class SanguineInfectionStatusEffect extends MobEffect {
+    public SanguineInfectionStatusEffect() {
+        super(MobEffectCategory.NEUTRAL, 0xbd0000);
     }
 
     @Override

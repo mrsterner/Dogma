@@ -126,4 +126,8 @@ public class Constants {
         String SANITY = "Sanity";
         String ADVICE = "Advice";
     }
+
+    public class Values {
+        public static final int BLEEDING = 120;//TODO check value
+    }
 }

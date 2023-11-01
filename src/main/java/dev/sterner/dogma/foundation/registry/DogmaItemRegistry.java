@@ -7,9 +7,7 @@ import dev.sterner.dogma.content.block.DebugWandItem;
 import dev.sterner.dogma.content.block_entity.abyss.CurseWardingBoxBlockEntity;
 import dev.sterner.dogma.content.item.abyss.LifeReverberatingStoneItem;
 import dev.sterner.dogma.content.item.abyss.StarCompassItem;
-import dev.sterner.dogma.content.item.necro.AllBlackSwordItem;
-import dev.sterner.dogma.content.item.necro.EmeraldTabletItem;
-import dev.sterner.dogma.content.item.necro.SyringeItem;
+import dev.sterner.dogma.content.item.necro.*;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
@@ -32,7 +30,7 @@ public interface DogmaItemRegistry {
     RegistryObject<Item> THOUSAND_MEN_PINS = ITEMS.register("thousand_men_pins", () -> new Item(settings()));
     RegistryObject<Item> LIFE_REVERBERATING_STONE = ITEMS.register("life_reverberating_stone", () -> new LifeReverberatingStoneItem(settings()));
 
-    RegistryObject<Item> FLESH = ITEMS.register("flesh", () -> new BlockItem(DogmaBlockRegistry.FLESH.get(), settings()));
+    RegistryObject<Item> BLOCK_OF_FLESH = ITEMS.register("block_of_flesh", () -> new BlockItem(DogmaBlockRegistry.FLESH.get(), settings()));
 
     RegistryObject<Item> CURSE_WARDING_BOX =
             ITEMS.register("curse_warding_box",
@@ -50,7 +48,7 @@ public interface DogmaItemRegistry {
     RegistryObject<Item> CARPENTER_TOOLS = ITEMS.register("carpenter_tools", () -> new Item(settings().stacksTo(1).durability(32)));
 
     RegistryObject<Item> MEAT_CLEAVER = ITEMS.register("meat_cleaver", () -> new AxeItem(Tiers.NETHERITE, 6, -2, settings()));
-    RegistryObject<Item> EMERALD_TABLET = ITEMS.register("emerald_tablet", () -> new EmeraldTabletItem(DogmaBlockRegistry.EMERALD_TABLET, settings()));
+    RegistryObject<Item> EMERALD_TABLET = ITEMS.register("emerald_tablet", () -> new EmeraldTabletItem(DogmaBlockRegistry.EMERALD_TABLET.get(), settings()));
 
     RegistryObject<Item> ALL_BLACK = ITEMS.register("all_black", () -> new AllBlackSwordItem(Tiers.NETHERITE, 8, -2, settings()));
 
@@ -60,10 +58,10 @@ public interface DogmaItemRegistry {
     RegistryObject<Item> SULFURIC_ACID = ITEMS.register("sulfuric_acid", () -> new Item(settings()));
     RegistryObject<Item> PHILOSOPHERS_STONE = ITEMS.register("philosophers_stone", () -> new Item(settings()));
 
-    RegistryObject<Item> MORPHINE = ITEMS.register("morphine", () -> new MobEffectItem(settings(), DogmaMobEffects.MORPHINE));
-    RegistryObject<Item> EUTHANASIA = ITEMS.register("euthanasia", () -> new MobEffectItem(settings(), DogmaMobEffects.EUTHANASIA));
-    RegistryObject<Item> ADRENALINE = ITEMS.register("adrenaline", () -> new MobEffectItem(settings(), DogmaMobEffects.ADRENALINE));
-
+    RegistryObject<Item> MORPHINE = ITEMS.register("morphine", () -> new MobEffectItem(settings(), DogmaMobEffects.MORPHINE.get()));
+    RegistryObject<Item> EUTHANASIA = ITEMS.register("euthanasia", () -> new MobEffectItem(settings(), DogmaMobEffects.EUTHANASIA.get()));
+    RegistryObject<Item> ADRENALINE = ITEMS.register("adrenaline", () -> new MobEffectItem(settings(), DogmaMobEffects.ADRENALINE.get()));
+/*
     RegistryObject<Item> SKELETON_HELMET = ITEMS.register("skeleton_helmet", () -> new SkeletonArmorItem(ArmorItem.Type.HELMET, settings()));
     RegistryObject<Item> SKELETON_CHESTPLATE = ITEMS.register("skeleton_chestplate", () -> new SkeletonArmorItem(ArmorItem.Type.CHESTPLATE, settings()));
     RegistryObject<Item> SKELETON_LEGGINGS = ITEMS.register("skeleton_leggings", () -> new SkeletonArmorItem(ArmorItem.Type.LEGGINGS, settings()));
@@ -74,17 +72,19 @@ public interface DogmaItemRegistry {
     RegistryObject<Item> WITHER_LEGGINGS = ITEMS.register("wither_leggings", () -> new WitherArmorItem(ArmorItem.Type.LEGGINGS, settings()));
     RegistryObject<Item> WITHER_BOOTS = ITEMS.register("wither_boots", () -> new WitherArmorItem(ArmorItem.Type.BOOTS, settings()));
 
+ */
+
     RegistryObject<Item> SOAP = ITEMS.register("soap", () -> new SoapItem(settings()));
     RegistryObject<Item> QUARTZ_PEARL = ITEMS.register("quartz_pearl", () -> new Item(settings()));
 
-    RegistryObject<Item> CELLAR_KEY = ITEMS.register("cellar_key", () -> new CellarKeyItem(settings()));
-    RegistryObject<Item> CONTRACT = ITEMS.register("contract", () -> new ContractItem(settings()));
+    //RegistryObject<Item> CELLAR_KEY = ITEMS.register("cellar_key", () -> new CellarKeyItem(settings()));
+    //RegistryObject<Item> CONTRACT = ITEMS.register("contract", () -> new ContractItem(settings()));
     RegistryObject<Item> PACKET = ITEMS.register("packet", () -> new Item(settings()));
     RegistryObject<Item> CAGE = ITEMS.register("cage", () -> new CageItem(settings()));
     RegistryObject<Item> HOOK = ITEMS.register("hook", () -> new Item(settings()));
     RegistryObject<Item> METAL_HOOK = ITEMS.register("metal_hook", () -> new Item(settings()));
-    RegistryObject<Item> OLD_LETTER = ITEMS.register("old_letter", () -> new OldLetterItem(settings()));
-    RegistryObject<Item> ROPE = ITEMS.register("rope", () -> new RopeBlock(, settings()));
+    //RegistryObject<Item> OLD_LETTER = ITEMS.register("old_letter", () -> new OldLetterItem(settings()));
+    RegistryObject<Item> ROPE = ITEMS.register("rope", () -> new BlockItem(DogmaBlockRegistry.ROPE.get(), settings()));
 
     RegistryObject<Item> FLESH = ITEMS.register("flesh", () -> new Item(settings().food(Foods.PORKCHOP)));
     RegistryObject<Item> COOKED_FLESH = ITEMS.register("cooked_flesh", () -> new Item(settings().food(Foods.COOKED_PORKCHOP)));

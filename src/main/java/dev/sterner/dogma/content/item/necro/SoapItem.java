@@ -1,10 +1,12 @@
 package dev.sterner.dogma.content.item.necro;
 
 
+import net.minecraft.world.item.Item;
+
 public class SoapItem extends Item {
     private static final int MAX_USE_TIME = 7200;
 
-    public SoapItem(Settings settings) {
+    public SoapItem(Properties settings) {
         super(settings.maxDamage(8));
     }
 

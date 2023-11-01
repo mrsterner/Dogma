@@ -1,7 +1,10 @@
 package dev.sterner.dogma.content.mod_effect.necro;
 
-public class SoulSicknessStatusEffect extends StatusEffect {
-    public SoulSicknessStatusEffect(StatusEffectType type) {
-        super(type, 0x91db69);
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+
+public class SoulSicknessStatusEffect extends MobEffect {
+    public SoulSicknessStatusEffect() {
+        super(MobEffectCategory.NEUTRAL, 0x91db69);
     }
 }
