@@ -8,6 +8,7 @@ import dev.sterner.dogma.content.block_entity.JarBlockEntity;
 import dev.sterner.dogma.content.block_entity.PedestalBlockEntity;
 import dev.sterner.dogma.content.block_entity.abyss.CurseWardingBoxBlockEntity;
 import dev.sterner.dogma.content.block_entity.necro.BrainBlockEntity;
+import dev.sterner.dogma.content.block_entity.necro.NecroTableBlockEntity;
 import dev.sterner.dogma.content.block_entity.necro.TabletBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -61,6 +62,14 @@ public interface DogmaBlockEntityTypeRegistry {
                     () -> BlockEntityType.Builder.of(
                             BookBlockEntity::new,
                             DogmaBlockRegistry.BOOK_OF_THE_DEAD.get()
+                    ).build(null)
+            );
+
+    RegistryObject<BlockEntityType<NecroTableBlockEntity>> NECRO =
+            BLOCK_ENTITY_TYPES.register("necro",
+                    () -> BlockEntityType.Builder.of(
+                            NecroTableBlockEntity::new,
+                            DogmaBlockRegistry.NECRO_TABLE.get()
                     ).build(null)
             );
 

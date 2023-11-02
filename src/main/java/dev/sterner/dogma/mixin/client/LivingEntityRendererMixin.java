@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,11 +41,11 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             if (f > 1.0F) {
                 f = 1.0F;
             }
-            Float lyinganglebonus = 1F;
+            float lieAngle = 1F;
             if (this.getFlipDegrees(entity) > 90F) {
-                lyinganglebonus = 2.5F;
+                lieAngle = 2.5F;
             }
-            matrices.translate(0.0D, ((entity.getBbWidth() / 4.0D) * f) * lyinganglebonus, 0.0D);
+            matrices.translate(0.0D, ((entity.getBbWidth() / 4.0D) * f) * lieAngle, 0.0D);
             if (entity.isBaby()) {
                 matrices.translate(-(double) ((entity.getBbHeight() / 2) * f), 0.0D, 0.0D);
             }

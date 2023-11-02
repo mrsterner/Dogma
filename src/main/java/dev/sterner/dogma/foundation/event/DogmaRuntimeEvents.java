@@ -119,7 +119,6 @@ public class DogmaRuntimeEvents {
     @SubscribeEvent
     public static void applyDamage(LivingDamageEvent event){
         NecroLivingEntityDataCapability.applyDamage(event);
-        NecroCorpseDataCapability.applyDamage(event);
     }
 
     @SubscribeEvent

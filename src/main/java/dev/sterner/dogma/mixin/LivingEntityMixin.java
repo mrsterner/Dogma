@@ -1,6 +1,9 @@
 package dev.sterner.dogma.mixin;
 
 import dev.sterner.dogma.api.event.LivingDeathTickEvent;
+import dev.sterner.dogma.foundation.capability.necro.NecroCorpseDataCapability;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -30,9 +34,21 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    @Inject(method = "hurt", at = @At("HEAD"))
+    private void dogma$hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity livingEntity = (LivingEntity)(Object)(this);
+        NecroCorpseDataCapability capability = NecroCorpseDataCapability.getCapability(livingEntity);
+        if (capability.isCorpse) {
+            capability.shouldDie = true;
+            if (!livingEntity.level().isClientSide) {
+                NecroCorpseDataCapability.sync(livingEntity);
+            }
+        }
+    }
+
     @Inject(method = "aiStep", at = @At("HEAD"), cancellable = true)
     private void book_of_the_dead$tickMovement(CallbackInfo callbackInfo) {
-        LivingEntity livingEntity = LivingEntity.class.cast(this);
+        LivingEntity livingEntity = (LivingEntity)(Object)(this);
         if (this.deathTime >= 20 && livingEntity instanceof Mob) {
             AABB box = this.getBoundingBox();
             if (this.level().containsAnyLiquid(box.move(0.0D, box.getYsize(), 0.0D))) {

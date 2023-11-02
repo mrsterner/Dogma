@@ -6,11 +6,14 @@ import dev.sterner.dogma.api.event.LivingDeathTickEvent;
 import dev.sterner.dogma.foundation.Constants;
 import dev.sterner.dogma.foundation.DogmaPackets;
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroCorpseCapabilityDataPacket;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -34,6 +37,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.intellij.lang.annotations.Identifier;
 import team.lodestar.lodestone.systems.capability.LodestoneCapability;
 import team.lodestar.lodestone.systems.capability.LodestoneCapabilityProvider;
@@ -83,7 +87,7 @@ public class NecroCorpseDataCapability implements LodestoneCapability {
                     }
                 }
 
-                AABB corpseBox = new AABB(livingEntity.getX() - (livingEntity.getBbWidth() / 2.0F), livingEntity.getY() - (livingEntity.getBbWidth() / 2.0F), livingEntity.getZ() - (livingEntity.getBbWidth() / 2.0F), livingEntity.getX() + (livingEntity.getBbWidth() / 1.5F), livingEntity.getY() + (livingEntity.getBbWidth() / 1.5F), livingEntity.getZ() + (livingEntity.getBbWidth() / 1.5F));
+                AABB corpseBox = new AABB(livingEntity.getX() - (livingEntity.getBbWidth() / 3.0F), livingEntity.getY() - (livingEntity.getBbWidth() / 3.0F), livingEntity.getZ() - (livingEntity.getBbWidth() / 3.0F), livingEntity.getX() + (livingEntity.getBbWidth() / 1.5F), livingEntity.getY() + (livingEntity.getBbWidth() / 1.5F), livingEntity.getZ() + (livingEntity.getBbWidth() / 1.5F));
                 if ((livingEntity.getDimensions(Pose.STANDING).height < 1.0F && livingEntity.getDimensions(Pose.STANDING).width < 1.0F) || (livingEntity.getDimensions(Pose.STANDING).width / livingEntity.getDimensions(Pose.STANDING).height) > 1.395F) {
                     livingEntity.setBoundingBox(corpseBox);
                 } else {
@@ -97,7 +101,12 @@ public class NecroCorpseDataCapability implements LodestoneCapability {
                     if (server != null && capability.damageSource != null) {
                         ResourceLocation identifier = livingEntity.getLootTable();
                         LootTable lootTable = server.getLootData().getLootTable(identifier);
-                        LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel)livingEntity.level())).withParameter(LootContextParams.THIS_ENTITY, livingEntity).withParameter(LootContextParams.ORIGIN, livingEntity.position()).withParameter(LootContextParams.DAMAGE_SOURCE, livingEntity.getLastDamageSource()).withOptionalParameter(LootContextParams.KILLER_ENTITY, livingEntity.getLastDamageSource().getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, livingEntity.getLastDamageSource().getDirectEntity());
+                        LootParams.Builder lootparams$builder = new LootParams.Builder((ServerLevel)livingEntity.level())
+                                .withParameter(LootContextParams.THIS_ENTITY, livingEntity)
+                                .withParameter(LootContextParams.ORIGIN, livingEntity.position())
+                                .withParameter(LootContextParams.DAMAGE_SOURCE, capability.damageSource)
+                                .withOptionalParameter(LootContextParams.KILLER_ENTITY, capability.damageSource.getEntity())
+                                .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, capability.damageSource.getDirectEntity());
 
                         lootTable.getRandomItems(lootparams$builder.create(LootContextParamSets.ENTITY), livingEntity::spawnAtLocation);
                     }
@@ -113,7 +122,7 @@ public class NecroCorpseDataCapability implements LodestoneCapability {
 
         boolean isCorpse = capability.isCorpse;
         if ((isCorpse || DogmaApi.isButchering(livingEntity))) {
-            capability.damageSource = livingEntity.getLastDamageSource();
+            capability.damageSource = livingDropsEvent.getSource();
             livingDropsEvent.setCanceled(true);
         }
     }
@@ -124,15 +133,6 @@ public class NecroCorpseDataCapability implements LodestoneCapability {
         if (capabilityOld.isCorpse) {
             capability.isCorpse(false);
         }
-    }
-
-    public static void applyDamage(LivingDamageEvent event) {
-        NecroCorpseDataCapability capability = NecroCorpseDataCapability.getCapability(event.getEntity());
-        if (capability.isCorpse) {
-            capability.shouldDie = true;
-            sync(event.getEntity());
-        }
-
     }
 
     public void isCorpse(boolean isCorpse) {

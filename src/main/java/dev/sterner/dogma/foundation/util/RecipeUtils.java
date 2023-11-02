@@ -3,13 +3,20 @@ package dev.sterner.dogma.foundation.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
+import dev.sterner.dogma.api.StackWithChance;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -48,6 +55,36 @@ public class RecipeUtils {
         }
 
         return item;
+    }
+
+    public static NonNullList<StackWithChance> deserializeStackWithCount(JsonArray array) {
+        if (array.isJsonArray()) {
+            return arrayStream(array.getAsJsonArray()).map(entry -> deserializeStackWithCount(entry.getAsJsonObject())).collect(DefaultedListCollector.toList());
+        } else {
+            return NonNullList.of(deserializeStackWithCount(array.getAsJsonObject()));
+        }
+    }
+
+    public static @NotNull StackWithChance deserializeStackWithCount(JsonObject object) {
+        final ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(object, "item"));
+        final Item item = ForgeRegistries.ITEMS.getValue(id);
+        if (Items.AIR == item) {
+            throw new IllegalStateException("Invalid item: " + item);
+        }
+        int count = 1;
+        float chance = 1.2f;
+        if (object.has("count")) {
+            count = GsonHelper.getAsInt(object, "count");
+        }
+        if (object.has("chance")) {
+            chance = GsonHelper.getAsFloat(object, "chance");
+        }
+        final ItemStack stack = new ItemStack(item, count);
+        if (object.has("nbt")) {
+            final CompoundTag tag = (CompoundTag) Dynamic.convert(JsonOps.INSTANCE, NbtOps.INSTANCE, object.get("nbt"));
+            stack.setTag(tag);
+        }
+        return new StackWithChance(stack, chance);
     }
 
     public static class DefaultedListCollector<T> implements Collector<T, NonNullList<T>, NonNullList<T>> {

@@ -16,9 +16,16 @@ public abstract class MobMixin extends LivingEntity {
     }
 
     @Inject(method = "tickHeadTurn", at = @At("HEAD"), cancellable = true)
-    public void book_of_the_dead$turnHead(float bodyRotation, float headRotation, CallbackInfoReturnable<Float> info) {
+    public void dogma$turnHead(float bodyRotation, float headRotation, CallbackInfoReturnable<Float> info) {
         if (this.deathTime > 0) {
             info.setReturnValue(0.0F);
+        }
+    }
+
+    @Inject(method = "isSunBurnTick", at = @At("HEAD"), cancellable = true)
+    private void dogma$isSunBurnTick(CallbackInfoReturnable<Boolean> info) {
+        if (this.isDeadOrDying()) {
+            info.setReturnValue(false);
         }
     }
 }
