@@ -1,37 +1,37 @@
-[02Nov2023 15:22:28.937] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, /home/mrsterner/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 47.2.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, -mixin.config=dogma.mixins.json, --mod, dogma, --all, --output, /home/mrsterner/IntelliJ/Dogma/src/generated/resources, --existing, /home/mrsterner/IntelliJ/Dogma/src/main/resources, --mixin.config, dogma.mixins.json]
-[02Nov2023 15:22:28.944] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.8.1 by N/A; OS Linux arch amd64 version 5.15.133-1-MANJARO
-[02Nov2023 15:22:29.105] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
-[02Nov2023 15:22:29.172] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/mrsterner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=CLIENT
-[02Nov2023 15:22:29.684] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.2.0/7f9181f85acc66547685a72020713fc8cbde98/javafmllanguage-1.20.1-47.2.0.jar is missing mods.toml file
-[02Nov2023 15:22:29.686] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.2.0/7872f5205685fdd26fae39b1be79b0e60ca5b7bd/lowcodelanguage-1.20.1-47.2.0.jar is missing mods.toml file
-[02Nov2023 15:22:29.688] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.2.0/d501d161cabed08b3c139a2c6217b02a39f3c3e9/mclanguage-1.20.1-47.2.0.jar is missing mods.toml file
-[02Nov2023 15:22:29.690] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.2.0/ffd3c6debac0a388c9e33ac43c9f5eafb91cb466/fmlcore-1.20.1-47.2.0.jar is missing mods.toml file
-[02Nov2023 15:22:29.991] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
-[02Nov2023 15:22:33.040] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
-[02Nov2023 15:22:33.044] [main/ERROR] [mixin/]: Mixin config azurelib.mixins.json does not specify "minVersion" property
-[02Nov2023 15:22:33.049] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, /home/mrsterner/.gradle/caches/forge_gradle/assets, --assetIndex, 5, --mod, dogma, --all, --output, /home/mrsterner/IntelliJ/Dogma/src/generated/resources, --existing, /home/mrsterner/IntelliJ/Dogma/src/main/resources]
-[02Nov2023 15:22:33.536] [main/WARN] [mixin/]: Reference map 'dogma.refmap.json' for dogma.mixins.json could not be read. If this is a development environment you can ignore this message
-[02Nov2023 15:22:35.515] [main/INFO] [mixin/]: Remapping refMap azurelib.refmap.json using /home/mrsterner/IntelliJ/Dogma/build/createSrgToMcp/output.srg
-[02Nov2023 15:22:36.373] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [dogma]
-[02Nov2023 15:22:45.680] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.2.0, for MC 1.20.1 with MCP 20230612.114412
-[02Nov2023 15:22:45.681] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.2.0 Initialized
-[02Nov2023 15:22:46.027] [modloading-worker-0/WARN] [mod.azure.azurelib.AzureLib/]: Minecraft.getInstance() was null, could not register reload listeners
-[02Nov2023 15:22:46.743] [modloading-worker-0/INFO] [mod.azure.azurelib.AzureLib/FileWatching]: Registered azurelib config for auto-sync function
-[02Nov2023 15:22:47.789] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/home/mrsterner/IntelliJ/Dogma/build/fg_cache/net/minecraftforge/forge/1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
-[02Nov2023 15:22:47.789] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/home/mrsterner/IntelliJ/Dogma/build/fg_cache/net/minecraftforge/forge/1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
-[02Nov2023 15:22:47.941] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id dogma
-[02Nov2023 15:22:48.193] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id dogma finished after 251 ms
-[02Nov2023 15:22:48.193] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id dogma
-[02Nov2023 15:22:48.194] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id dogma finished after 0 ms
-[02Nov2023 15:22:48.194] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:entity_type mod id dogma
-[02Nov2023 15:22:48.210] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:entity_type mod id dogma finished after 16 ms
-[02Nov2023 15:22:48.210] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
-[02Nov2023 15:22:48.328] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 117 ms
-[02Nov2023 15:22:48.329] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Mine in Abyss BlockStates
-[02Nov2023 15:22:48.461] [main/INFO] [net.minecraft.data.DataGenerator/]: Mine in Abyss BlockStates finished after 132 ms
-[02Nov2023 15:22:48.461] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Dogma Item Models
-[02Nov2023 15:22:48.480] [main/INFO] [net.minecraft.data.DataGenerator/]: Dogma Item Models finished after 18 ms
-[02Nov2023 15:22:48.480] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Languages: en_us
-[02Nov2023 15:22:48.487] [main/INFO] [net.minecraft.data.DataGenerator/]: Languages: en_us finished after 7 ms
-[02Nov2023 15:22:48.488] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 547 ms
-[02Nov2023 15:22:48.494] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 77, old count: 72, new count: 78, removed stale: 0, written: 5
+[02Nov2023 22:00:10.395] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, /home/mrsterner/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 47.2.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, -mixin.config=dogma.mixins.json, --mod, dogma, --all, --output, /home/mrsterner/IntelliJ/Dogma/src/generated/resources, --existing, /home/mrsterner/IntelliJ/Dogma/src/main/resources, --mixin.config, dogma.mixins.json]
+[02Nov2023 22:00:10.399] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.8.1 by N/A; OS Linux arch amd64 version 5.15.133-1-MANJARO
+[02Nov2023 22:00:10.680] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[02Nov2023 22:00:10.770] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/mrsterner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=CLIENT
+[02Nov2023 22:00:11.205] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.2.0/7f9181f85acc66547685a72020713fc8cbde98/javafmllanguage-1.20.1-47.2.0.jar is missing mods.toml file
+[02Nov2023 22:00:11.206] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.2.0/7872f5205685fdd26fae39b1be79b0e60ca5b7bd/lowcodelanguage-1.20.1-47.2.0.jar is missing mods.toml file
+[02Nov2023 22:00:11.208] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.2.0/d501d161cabed08b3c139a2c6217b02a39f3c3e9/mclanguage-1.20.1-47.2.0.jar is missing mods.toml file
+[02Nov2023 22:00:11.210] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/mrsterner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.2.0/ffd3c6debac0a388c9e33ac43c9f5eafb91cb466/fmlcore-1.20.1-47.2.0.jar is missing mods.toml file
+[02Nov2023 22:00:11.305] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[02Nov2023 22:00:13.282] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[02Nov2023 22:00:13.286] [main/ERROR] [mixin/]: Mixin config azurelib.mixins.json does not specify "minVersion" property
+[02Nov2023 22:00:13.293] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, /home/mrsterner/.gradle/caches/forge_gradle/assets, --assetIndex, 5, --mod, dogma, --all, --output, /home/mrsterner/IntelliJ/Dogma/src/generated/resources, --existing, /home/mrsterner/IntelliJ/Dogma/src/main/resources]
+[02Nov2023 22:00:13.335] [main/WARN] [mixin/]: Reference map 'dogma.refmap.json' for dogma.mixins.json could not be read. If this is a development environment you can ignore this message
+[02Nov2023 22:00:13.884] [main/INFO] [mixin/]: Remapping refMap azurelib.refmap.json using /home/mrsterner/IntelliJ/Dogma/build/createSrgToMcp/output.srg
+[02Nov2023 22:00:14.765] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [dogma]
+[02Nov2023 22:00:21.715] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.2.0, for MC 1.20.1 with MCP 20230612.114412
+[02Nov2023 22:00:21.716] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.2.0 Initialized
+[02Nov2023 22:00:22.070] [modloading-worker-0/WARN] [mod.azure.azurelib.AzureLib/]: Minecraft.getInstance() was null, could not register reload listeners
+[02Nov2023 22:00:22.211] [modloading-worker-0/INFO] [mod.azure.azurelib.AzureLib/FileWatching]: Registered azurelib config for auto-sync function
+[02Nov2023 22:00:22.818] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/home/mrsterner/IntelliJ/Dogma/build/fg_cache/net/minecraftforge/forge/1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
+[02Nov2023 22:00:22.819] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/home/mrsterner/IntelliJ/Dogma/build/fg_cache/net/minecraftforge/forge/1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.2.0_mapped_parchment_2023.09.03-1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
+[02Nov2023 22:00:23.093] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id dogma
+[02Nov2023 22:00:23.387] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id dogma finished after 293 ms
+[02Nov2023 22:00:23.387] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id dogma
+[02Nov2023 22:00:23.389] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id dogma finished after 1 ms
+[02Nov2023 22:00:23.389] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:entity_type mod id dogma
+[02Nov2023 22:00:23.413] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:entity_type mod id dogma finished after 23 ms
+[02Nov2023 22:00:23.413] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
+[02Nov2023 22:00:23.536] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 122 ms
+[02Nov2023 22:00:23.536] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Mine in Abyss BlockStates
+[02Nov2023 22:00:23.694] [main/INFO] [net.minecraft.data.DataGenerator/]: Mine in Abyss BlockStates finished after 157 ms
+[02Nov2023 22:00:23.694] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Dogma Item Models
+[02Nov2023 22:00:23.731] [main/INFO] [net.minecraft.data.DataGenerator/]: Dogma Item Models finished after 37 ms
+[02Nov2023 22:00:23.731] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Languages: en_us
+[02Nov2023 22:00:23.745] [main/INFO] [net.minecraft.data.DataGenerator/]: Languages: en_us finished after 13 ms
+[02Nov2023 22:00:23.745] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 652 ms
+[02Nov2023 22:00:24.276] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 78, old count: 77, new count: 78, removed stale: 1, written: 3

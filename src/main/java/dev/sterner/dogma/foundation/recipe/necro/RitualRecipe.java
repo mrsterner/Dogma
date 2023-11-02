@@ -1,6 +1,7 @@
 package dev.sterner.dogma.foundation.recipe.necro;
 
 import dev.sterner.dogma.api.CommandType;
+import dev.sterner.dogma.foundation.necro.BasicNecrotableRitual;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -17,19 +18,19 @@ import java.util.Set;
 
 public class RitualRecipe extends ILodestoneRecipe {
 
-    private ResourceLocation id;
-    private BasicNecrotableRitual ritual;
-    private ResourceLocation texture;
-    private boolean requireBotD;
-    private boolean requireEmeraldTablet;
-    private boolean isSpecial;
-    private int duration;
-    private @Nullable NonNullList<Ingredient> inputs;
-    private @Nullable List<ItemStack> outputs;
-    private @Nullable List<EntityType<?>> sacrifices;
-    private @Nullable List<EntityType<?>> summons;
-    private @Nullable List<MobEffectInstance> statusEffectInstance;
-    private Set<CommandType> command;
+    public ResourceLocation id;
+    public BasicNecrotableRitual ritual;
+    public ResourceLocation texture;
+    public boolean requireBotD;
+    public boolean requireEmeraldTablet;
+    public boolean isSpecial;
+    public int duration;
+    public @Nullable NonNullList<Ingredient> inputs;
+    public @Nullable List<ItemStack> outputs;
+    public @Nullable List<EntityType<?>> sacrifices;
+    public @Nullable List<EntityType<?>> summons;
+    public @Nullable List<MobEffectInstance> statusEffectInstance;
+    public Set<CommandType> command;
 
     public RitualRecipe(ResourceLocation id,
                         BasicNecrotableRitual ritual,

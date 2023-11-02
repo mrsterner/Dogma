@@ -57,6 +57,7 @@ public class Dogma {
         CREATIVE_MODE_TABS.register(modBus);
 
         DogmaRegistries.CURSE_DEFERRED_REGISTER.register(modBus);
+        DogmaRegistries.KNOWLEDGE_DEFERRED_REGISTER.register(modBus);
 
         modBus.addListener(DogmaCreativeTabRegistry::populateItemGroups);
         modBus.addListener(DogmaDataGenerator::gatherData);

@@ -46,7 +46,7 @@ public interface DogmaItemRegistry {
     //end abyss
     //------------------------------------------------
     //start necro
-    RegistryObject<Item> BOOK_OF_THE_DEAD = ITEMS.register("book_of_the_dead", () -> new Item(settings()));
+    RegistryObject<Item> BOOK_OF_THE_DEAD = ITEMS.register("book_of_the_dead", () -> new BookOfTheDeadItem(DogmaBlockRegistry.BOOK_OF_THE_DEAD.get(), settings()));
 
     RegistryObject<Item> PAPER_AND_QUILL = ITEMS.register("paper_and_quill", () -> new Item(settings().stacksTo(1)));
     RegistryObject<Item> CARPENTER_TOOLS = ITEMS.register("carpenter_tools", () -> new Item(settings().stacksTo(1).durability(32)));
@@ -82,7 +82,7 @@ public interface DogmaItemRegistry {
     RegistryObject<Item> QUARTZ_PEARL = ITEMS.register("quartz_pearl", () -> new Item(settings()));
 
     //RegistryObject<Item> CELLAR_KEY = ITEMS.register("cellar_key", () -> new CellarKeyItem(settings()));
-    //RegistryObject<Item> CONTRACT = ITEMS.register("contract", () -> new ContractItem(settings()));
+    RegistryObject<Item> CONTRACT = ITEMS.register("contract", () -> new ContractItem(settings()));
     RegistryObject<Item> PACKET = ITEMS.register("packet", () -> new Item(settings()));
     //RegistryObject<Item> CAGE = ITEMS.register("cage", () -> new CageItem(settings()));
     RegistryObject<Item> HOOK = ITEMS.register("hook", () -> new Item(settings()));

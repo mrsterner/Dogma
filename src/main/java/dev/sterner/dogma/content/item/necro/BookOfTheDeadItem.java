@@ -1,5 +1,6 @@
 package dev.sterner.dogma.content.item.necro;
 
+import dev.sterner.dogma.client.screen.necro.BookOfTheDeadScreen;
 import dev.sterner.dogma.foundation.registry.DogmaBlockRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -35,7 +36,7 @@ public class BookOfTheDeadItem extends BlockItem {
             if (cancelPlacement(level, player)) {
                 return InteractionResultHolder.success(player.getItemInHand(hand));
             }
-            //BookOfTheDeadScreen.openScreen(player);
+            BookOfTheDeadScreen.openScreen(player);
             player.swing(hand);
             return InteractionResultHolder.success(player.getItemInHand(hand));
         }

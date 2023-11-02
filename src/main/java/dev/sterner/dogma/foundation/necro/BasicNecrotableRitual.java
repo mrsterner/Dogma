@@ -1,6 +1,7 @@
 package dev.sterner.dogma.foundation.necro;
 
 import dev.sterner.dogma.api.IRitual;
+import dev.sterner.dogma.content.block_entity.necro.NecroTableBlockEntity;
 import dev.sterner.dogma.foundation.handler.necro.RitualHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +25,7 @@ public class BasicNecrotableRitual implements IRitual {
         if (ritualHandler.userUuid == null) {
             Player player = world.getNearestPlayer(blockPos.getZ(), blockPos.getY(), blockPos.getZ(), 16D, true);
             if (player != null) {
-                ritualHandler.userUuid = player.getUuid();
+                ritualHandler.userUuid = player.getUUID();
             }
         }
 

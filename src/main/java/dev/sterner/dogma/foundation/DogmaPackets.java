@@ -1,6 +1,7 @@
 package dev.sterner.dogma.foundation;
 
 import dev.sterner.dogma.Dogma;
+import dev.sterner.dogma.foundation.networking.KnowledgeC2SPacket;
 import dev.sterner.dogma.foundation.networking.SyncPlayerCapabilityDataPacket;
 import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLevelCapabilityPacket;
 import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLivingCapabilityDataPacket;
@@ -33,6 +34,8 @@ public class DogmaPackets {
         SyncNecroLivingCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
         SyncNecroPlayerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
         SyncNecroPlayerHaulerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
+
+        KnowledgeC2SPacket.register(DOGMA_CHANNEL, index++);
 
         //Core
         SyncPlayerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);

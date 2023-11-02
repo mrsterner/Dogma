@@ -6,11 +6,14 @@ import dev.sterner.dogma.api.FloatingItemEntity;
 import dev.sterner.dogma.api.PedestalInfo;
 import dev.sterner.dogma.content.block_entity.PedestalBlockEntity;
 import dev.sterner.dogma.content.block_entity.necro.NecroTableBlockEntity;
+import dev.sterner.dogma.content.item.necro.ContractItem;
 import dev.sterner.dogma.foundation.capability.necro.NecroLivingEntityDataCapability;
 import dev.sterner.dogma.foundation.registry.DogmaEntityTypeRegistry;
 import dev.sterner.dogma.foundation.registry.DogmaItemRegistry;
 import dev.sterner.dogma.foundation.registry.DogmaMobEffects;
+import dev.sterner.dogma.foundation.registry.DogmaSoundEventRegistry;
 import dev.sterner.dogma.foundation.util.DogmaUtils;
+import dev.sterner.dogma.foundation.util.ParticleUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -37,7 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class RitualManager {
+public class RitualHandler {
     public int pedestalTicker = 0;
     public int sacrificeTicker = -1;
     public boolean canCollectPedestals = true;
@@ -62,14 +65,14 @@ public class RitualManager {
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.playSound(null, x, y, z, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1F, 1F);
             }
-            if (blockEntity.ritualRecipe.outputs() != null) {
-                if (blockEntity.ritualRecipe.outputs().size() > 1) {
-                    for (ItemStack output : blockEntity.ritualRecipe.outputs()) {
+            if (blockEntity.ritualRecipe.outputs != null) {
+                if (blockEntity.ritualRecipe.outputs.size() > 1) {
+                    for (ItemStack output : blockEntity.ritualRecipe.outputs) {
                         Containers.dropItemStack(level, x, y, z, output.copy());
                     }
                 } else {
                     FloatingItemEntity itemEntity = new FloatingItemEntity(DogmaEntityTypeRegistry.FLOATING_ITEM_ENTITY.get(), level);
-                    itemEntity.setItem(blockEntity.ritualRecipe.outputs().get(0).copy());
+                    itemEntity.setItem(blockEntity.ritualRecipe.outputs.get(0).copy());
                     itemEntity.getEntityData().set(FloatingItemEntity.IS_SPECIAL_RENDER, blockEntity.ritualRecipe.isSpecial());
                     itemEntity.moveTo(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f, 0, 0);
                     level.addFreshEntity(itemEntity);
@@ -86,8 +89,8 @@ public class RitualManager {
      * @param blockEntity ritualBlockEntity
      */
     public void summonSummons(Level level, BlockPos blockPos, NecroTableBlockEntity blockEntity) {
-        if (blockEntity.ritualRecipe.summons() != null) {
-            for (EntityType<?> entityType : blockEntity.ritualRecipe.summons()) {
+        if (blockEntity.ritualRecipe.summons != null) {
+            for (EntityType<?> entityType : blockEntity.ritualRecipe.summons) {
                 var entity = entityType.create(level);
                 if (entity instanceof LivingEntity livingEntity) {
                     Vec3i levelPos = new Vec3i(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -113,7 +116,7 @@ public class RitualManager {
         int size = 16;
         List<LivingEntity> livingEntityList = new ArrayList<>();
         boolean foundContract = false;
-        if (blockEntity.ritualRecipe.statusEffectInstance() != null) {
+        if (blockEntity.ritualRecipe.statusEffectInstance != null) {
             for (Integer id : this.contract) {
                 if (id != 0) {
                     Entity entity = level.getEntity(id);
@@ -127,7 +130,7 @@ public class RitualManager {
                 livingEntityList = level.getEntitiesOfClass(LivingEntity.class, new AABB(blockPos).inflate(size), Entity::isAlive);
             }
             for (LivingEntity living : livingEntityList) {
-                for (MobEffectInstance instance : blockEntity.ritualRecipe.statusEffectInstance()) {
+                for (MobEffectInstance instance : blockEntity.ritualRecipe.statusEffectInstance) {
                     if (living.canBeAffected(instance)) {
                         living.addEffect(new MobEffectInstance(instance));
                     }
@@ -147,12 +150,12 @@ public class RitualManager {
     public boolean consumeItems(Level level, BlockPos blockPos, NecroTableBlockEntity blockEntity) {
         if (blockEntity.ritualRecipe == null) {
             return false;
-        } else if (blockEntity.ritualRecipe.inputs() != null && blockEntity.ritualRecipe.inputs().isEmpty()) {
+        } else if (blockEntity.ritualRecipe.inputs != null && blockEntity.ritualRecipe.inputs.isEmpty()) {
             return true;
         }
 
         if (blockEntity.pedestalToActivate.isEmpty() && canCollectPedestals) {
-            List<PedestalInfo> infoStream = blockEntity.getPedestalInfo(level).stream().filter(itemStackBlockPosPair -> !itemStackBlockPosPair.stack().isEmpty()).toList();
+            List<PedestalInfo> infoStream = blockEntity.getPedestalInfo(level).stream().filter(itemStackBlockPosPair -> !itemStackBlockPosPair.stacks().isEmpty()).toList();
             for (PedestalInfo info : infoStream) {
                 activatePedestalIfMatchesRecipe(level, blockEntity, info);
             }
@@ -162,24 +165,24 @@ public class RitualManager {
             BlockPos particlePos = blockEntity.pedestalToActivate.get(0).pos();
 
             if (level instanceof ServerLevel serverLevel) {
-                if (blockEntity.ritualRecipe.outputs() != null) {
-                    ParticleUtils.generateItemParticle(serverLevel, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, blockEntity.ritualRecipe.outputs());
+                if (blockEntity.ritualRecipe.outputs != null) {
+                    ParticleUtils.generateItemParticle(serverLevel, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, blockEntity.ritualRecipe.outputs);
                 }
-                ParticleUtils.spawnItemParticleBeam(new Vec3(particlePos.getX(), particlePos.getY(), particlePos.getZ()), new Vec3(blockPos.getX(), blockPos.getY() - 1, blockPos.getZ()), serverLevel, blockEntity.pedestalToActivate.get(0).stack());
+                ParticleUtils.spawnItemParticleBeam(new Vec3(particlePos.getX(), particlePos.getY(), particlePos.getZ()), new Vec3(blockPos.getX(), blockPos.getY() - 1, blockPos.getZ()), serverLevel, blockEntity.pedestalToActivate.get(0).stacks().get(0));
             }
 
             if (pedestalTicker == 1) {
-                level.playSound(null, blockEntity.pedestalToActivate.get(0).pos().getX(), blockEntity.pedestalToActivate.get(0).pos().getY(), blockEntity.pedestalToActivate.get(0).pos().getZ(), BotDSoundEvents.MISC_ITEM_BEAM, SoundCategory.BLOCKS, 0.5f, 0.75f * level.random.nextFloat() / 2);
+                level.playSound(null, blockEntity.pedestalToActivate.get(0).pos().getX(), blockEntity.pedestalToActivate.get(0).pos().getY(), blockEntity.pedestalToActivate.get(0).pos().getZ(), DogmaSoundEventRegistry.MISC_ITEM_BEAM.get(), SoundSource.BLOCKS, 0.5f, 0.75f * level.random.nextFloat() / 2);
             }
 
             if (pedestalTicker > 20 * 4) {
                 if (level.getBlockEntity(blockEntity.pedestalToActivate.get(0).pos()) instanceof PedestalBlockEntity pedestalBlockEntity) {
-                    pedestalBlockEntity.setStack(ItemStack.EMPTY);
+                    pedestalBlockEntity.inventory.getStacks().get(0).shrink(1);
                     pedestalBlockEntity.setCrafting(false);
-                    pedestalBlockEntity.markDirty();
+                    pedestalBlockEntity.setChanged();
                 }
                 blockEntity.pedestalToActivate.remove(0);
-                blockEntity.markDirty();
+                blockEntity.setChanged();
                 canCollectPedestals = false;
                 pedestalTicker = 0;
                 return blockEntity.pedestalToActivate.isEmpty();
@@ -197,13 +200,13 @@ public class RitualManager {
      * @param info        info
      */
     private void activatePedestalIfMatchesRecipe(Level level, NecroTableBlockEntity blockEntity, PedestalInfo info) {
-        for (Ingredient ingredient : Objects.requireNonNull(blockEntity.ritualRecipe.inputs())) {
-            if (ingredient.test(info.stack())) {
+        for (Ingredient ingredient : Objects.requireNonNull(blockEntity.ritualRecipe.inputs)) {
+            if (ingredient.test(info.stacks().get(0))) {
                 BlockPos checkPos = info.pos();
                 if (level.getBlockEntity(checkPos) instanceof PedestalBlockEntity pedestalBlockEntity) {
                     checkAndStoreContract(info);
                     pedestalBlockEntity.setCrafting(true);
-                    pedestalBlockEntity.markDirty();
+                    pedestalBlockEntity.setChanged();
                     blockEntity.pedestalToActivate.add(info);
                 }
             }
@@ -216,11 +219,11 @@ public class RitualManager {
      * @param info info
      */
     private void checkAndStoreContract(PedestalInfo info) {
-        if (info.stack().is(DogmaItemRegistry.CONTRACT) && info.stack().hasTag()) {
+        if (info.stacks().get(0).is(DogmaItemRegistry.CONTRACT.get()) && info.stacks().get(0).hasTag()) {
             for (int i = 0; i < contract.size(); i++) {
                 int id = contract.get(i);
                 if (id != 0) {
-                    contract.set(i, ContractItem.getIdFromContractNbt(info.stack()));
+                    contract.set(i, ContractItem.getIdFromContractNbt(info.stacks().get(0)));
                     break;
                 }
             }
@@ -236,9 +239,9 @@ public class RitualManager {
      * @return true if sacrifice was successful
      */
     public boolean consumeSacrifices(Level level, BlockPos blockPos, NecroTableBlockEntity blockEntity) {
-        if (blockEntity.ritualRecipe.sacrifices() == null) {
+        if (blockEntity.ritualRecipe.sacrifices == null) {
             return true;
-        } else if (blockEntity.ritualRecipe.sacrifices().isEmpty()) {
+        } else if (blockEntity.ritualRecipe.sacrifices.isEmpty()) {
             return true;
         }
 
@@ -246,7 +249,7 @@ public class RitualManager {
 
         if (blockEntity.sacrificeCache.isEmpty() && canCollectSacrifices) {
             List<LivingEntity> livingEntityList = level.getEntitiesOfClass(LivingEntity.class, new AABB(blockPos).inflate(size), Entity::isAlive);
-            List<EntityType<?>> ritualSacrifices = blockEntity.ritualRecipe.sacrifices();
+            List<EntityType<?>> ritualSacrifices = blockEntity.ritualRecipe.sacrifices;
 
             // Find and add the closest entity for each entity type to sacrificeCache
             for (EntityType<?> entityType : ritualSacrifices) {
@@ -268,7 +271,7 @@ public class RitualManager {
                 }
                 canCollectSacrifices = false;
                 blockEntity.sacrificeCache.remove(0);
-                blockEntity.markDirty();
+                blockEntity.setChanged();
                 sacrificeTicker = 0;
                 return blockEntity.sacrificeCache.isEmpty();
             }
@@ -278,7 +281,7 @@ public class RitualManager {
 
 
     /**
-     * Runs a command depending on which key phrase is used, "start", "tick", "end". Runs the {@link RitualManager#runCommand(MinecraftServer, BlockPos, String)}
+     * Runs a command depending on which key phrase is used, "start", "tick", "end". Runs the {@link RitualHandler#runCommand(MinecraftServer, BlockPos, String)}
      *
      * @param level       level
      * @param blockEntity ritualBlockEntity
@@ -287,7 +290,7 @@ public class RitualManager {
      */
     public void runCommand(Level level, NecroTableBlockEntity blockEntity, BlockPos blockPos, String phase) {
         MinecraftServer minecraftServer = level.getServer();
-        for (CommandType commandType : blockEntity.ritualRecipe.command()) {
+        for (CommandType commandType : blockEntity.ritualRecipe.command) {
             if (commandType.type().equals(phase)) {
                 runCommand(minecraftServer, blockPos, commandType.command());
             }

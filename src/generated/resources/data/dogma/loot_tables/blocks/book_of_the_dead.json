@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:air"
+          "name": "dogma:book_of_the_dead"
         }
       ],
       "rolls": 1.0

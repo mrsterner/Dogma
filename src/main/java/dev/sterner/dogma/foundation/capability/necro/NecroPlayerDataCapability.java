@@ -2,10 +2,15 @@ package dev.sterner.dogma.foundation.capability.necro;
 
 import dev.sterner.dogma.Dogma;
 import dev.sterner.dogma.api.IHauler;
+import dev.sterner.dogma.api.knowledge.Knowledge;
+import dev.sterner.dogma.api.knowledge.KnowledgeData;
 import dev.sterner.dogma.foundation.Constants;
 import dev.sterner.dogma.foundation.DogmaPackets;
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroPlayerCapabilityDataPacket;
+import dev.sterner.dogma.foundation.registry.DogmaRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -31,11 +36,15 @@ import org.checkerframework.checker.units.qual.C;
 import team.lodestar.lodestone.systems.capability.LodestoneCapability;
 import team.lodestar.lodestone.systems.capability.LodestoneCapabilityProvider;
 
-import java.util.Optional;
+import java.util.*;
 
 public class NecroPlayerDataCapability implements LodestoneCapability {
 
     private boolean isLich = false;
+    private static final int MAX_POINTS = 64;
+
+    private boolean isAlchemist = false;
+    private final Set<KnowledgeData> knowledgeData = new HashSet<>();
 
     public static Capability<NecroPlayerDataCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     });
@@ -53,6 +62,70 @@ public class NecroPlayerDataCapability implements LodestoneCapability {
             final NecroPlayerDataCapability capability = new NecroPlayerDataCapability();
             event.addCapability(Dogma.id("necro_player_data"), new LodestoneCapabilityProvider<>(NecroPlayerDataCapability.CAPABILITY, () -> capability));
         }
+    }
+
+    public Set<KnowledgeData> getKnowledgeData() {
+        return knowledgeData;
+    }
+
+    public boolean clearData(Player player) {
+        boolean bl = !getKnowledgeData().isEmpty();
+        getKnowledgeData().clear();
+        syncTrackingAndSelf(player);
+        return bl;
+    }
+
+    public boolean increaseKnowledgePoints(Player player, Knowledge knowledge, int amount) {
+        for (KnowledgeData kd : knowledgeData) {
+            if (kd.knowledge().equals(knowledge)) {
+                int currentPoints = kd.points();
+                int newPoints = currentPoints + amount;
+                if (newPoints <= MAX_POINTS) {
+                    setKnowledgePoint(player, kd, newPoints);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void setKnowledgePoint(Player player, KnowledgeData kd, int newPoints) {
+        if (knowledgeData.contains(kd)) {
+            knowledgeData.remove(kd);
+            knowledgeData.add(new KnowledgeData(kd.knowledge(), newPoints));
+        }
+        syncTrackingAndSelf(player);
+    }
+
+    public void setKnowledgePoint(Player player, Knowledge knowledge, int points) {
+        for (KnowledgeData kd : knowledgeData) {
+            if (kd.knowledge().equals(knowledge)) {
+                knowledgeData.remove(kd);
+                knowledgeData.add(new KnowledgeData(knowledge, points));
+                break;
+            }
+        }
+        syncTrackingAndSelf(player);
+    }
+
+    public boolean addKnowledge(Player player, Knowledge knowledge) {
+        boolean canAddKnowledge = true;
+        List<Knowledge> k = getKnowledgeData().stream().map(KnowledgeData::knowledge).toList();
+        if (k.contains(knowledge)) {
+            return false;
+        }
+        for (Knowledge child : knowledge.children) {
+            if (!k.contains(child)) {
+                canAddKnowledge = false;
+                break;
+            }
+        }
+        if (canAddKnowledge) {
+            getKnowledgeData().add(new KnowledgeData(knowledge, 0));
+        }
+
+        syncTrackingAndSelf(player);
+        return canAddKnowledge;
     }
 
     public static void tryUseExtraLives(LivingDeathEvent event) {
@@ -87,16 +160,51 @@ public class NecroPlayerDataCapability implements LodestoneCapability {
         this.isLich = aBoolean;
     }
 
+    public boolean isAlchemist() {
+        return isAlchemist;
+    }
+
+    public void setAlchemist(Player player, boolean alchemist) {
+        isAlchemist = alchemist;
+        syncTrackingAndSelf(player);
+    }
+
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         nbt.putBoolean(Constants.Nbt.IS_LICH, getLich());
+
+        ListTag knowledgeList = new ListTag();
+        for (KnowledgeData knowledgeData : getKnowledgeData()) {
+            CompoundTag nbtCompound = new CompoundTag();
+            nbtCompound.putString(Constants.Nbt.KNOWLEDGE, knowledgeData.knowledge().identifier);
+            nbtCompound.putInt(Constants.Nbt.POINTS, knowledgeData.points());
+            knowledgeList.add(nbtCompound);
+        }
+        nbt.put(Constants.Nbt.KNOWLEDGE_DATA, knowledgeList);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         setLich(nbt.getBoolean(Constants.Nbt.IS_LICH));
+
+        getKnowledgeData().clear();
+
+        ListTag nbtList = nbt.getList(Constants.Nbt.KNOWLEDGE_DATA, CompoundTag.TAG_COMPOUND);
+        List<KnowledgeData> knowledgeDataList = new ArrayList<>();
+
+        for (int i = 0; i < nbtList.size(); ++i) {
+            CompoundTag nbtCompound = nbtList.getCompound(i);
+            ResourceLocation id = Dogma.id(nbtCompound.getString(Constants.Nbt.KNOWLEDGE));
+            if (DogmaRegistries.KNOWLEDGE_REGISTRY.get().containsKey(id)) {
+                Knowledge knowledge = DogmaRegistries.KNOWLEDGE_REGISTRY.get().getValue(id);
+                int points = nbtCompound.getInt(Constants.Nbt.POINTS);
+                knowledgeDataList.add(new KnowledgeData(knowledge, points));
+            }
+        }
+
+        getKnowledgeData().addAll(knowledgeDataList);
     }
 
     //-----------------OBLIGATORY_PLAYER_IMPLEMENTATION-----------------

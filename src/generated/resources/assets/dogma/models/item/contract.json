@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "dogma:item/book_of_the_dead"
+    "layer0": "dogma:item/contract"
   }
 }

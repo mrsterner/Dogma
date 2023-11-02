@@ -1,5 +1,6 @@
 package dev.sterner.dogma.api;
 
+import dev.sterner.dogma.content.block_entity.necro.NecroTableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
