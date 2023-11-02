@@ -5,6 +5,7 @@ import dev.sterner.dogma.foundation.Constants;
 import dev.sterner.dogma.foundation.DogmaPackets;
 import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLivingCapabilityDataPacket;
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroLivingCapabilityDataPacket;
+import dev.sterner.dogma.foundation.registry.DogmaMobEffects;
 import dev.sterner.dogma.foundation.util.DogmaUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -26,6 +27,8 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.network.PacketDistributor;
 import team.lodestar.lodestone.systems.capability.LodestoneCapability;
@@ -59,6 +62,20 @@ public class NecroLivingEntityDataCapability implements LodestoneCapability {
             event.addCapability(Dogma.id("necro_living_data"), new LodestoneCapabilityProvider<>(NecroLivingEntityDataCapability.CAPABILITY, () -> capability));
         }
     }
+
+    public static void applyDamage(LivingDamageEvent event) {
+        LivingEntity livingEntity = event.getEntity();
+        float amount = event.getAmount();
+        if (livingEntity.hasEffect(DogmaMobEffects.MORPHINE.get()) && amount > 0.1f) {
+            if (!livingEntity.isInvulnerableTo(event.getSource())) {
+                NecroLivingEntityDataCapability capability = NecroLivingEntityDataCapability.getCapability(livingEntity);
+                capability.increaseMorphine$accumulatedDamage(amount);
+                event.setCanceled(true);
+            }
+        }
+    }
+
+
 
     @Override
     public CompoundTag serializeNBT() {

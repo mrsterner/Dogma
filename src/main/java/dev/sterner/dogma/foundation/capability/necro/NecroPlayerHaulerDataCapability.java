@@ -5,6 +5,7 @@ import dev.sterner.dogma.api.IHauler;
 import dev.sterner.dogma.foundation.Constants;
 import dev.sterner.dogma.foundation.DogmaPackets;
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroPlayerCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.necro.SyncNecroPlayerHaulerCapabilityDataPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,83 +27,107 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.network.PacketDistributor;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.units.qual.C;
 import team.lodestar.lodestone.systems.capability.LodestoneCapability;
 import team.lodestar.lodestone.systems.capability.LodestoneCapabilityProvider;
 
 import java.util.Optional;
 
-public class NecroPlayerDataCapability implements LodestoneCapability {
+public class NecroPlayerHaulerDataCapability implements LodestoneCapability, IHauler {
 
-    private boolean isLich = false;
+    public CompoundTag corpseData = new CompoundTag();
 
-    public static Capability<NecroPlayerDataCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    public static Capability<NecroPlayerHaulerDataCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     });
 
-    public NecroPlayerDataCapability() {
+    public NecroPlayerHaulerDataCapability() {
 
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(NecroPlayerDataCapability.class);
+        event.register(NecroPlayerHaulerDataCapability.class);
     }
 
     public static void attachEntityCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player) {
-            final NecroPlayerDataCapability capability = new NecroPlayerDataCapability();
-            event.addCapability(Dogma.id("necro_player_data"), new LodestoneCapabilityProvider<>(NecroPlayerDataCapability.CAPABILITY, () -> capability));
+            final NecroPlayerHaulerDataCapability capability = new NecroPlayerHaulerDataCapability();
+            event.addCapability(Dogma.id("necro_player_hauler_data"), new LodestoneCapabilityProvider<>(NecroPlayerHaulerDataCapability.CAPABILITY, () -> capability));
         }
     }
 
-    public static void tryUseExtraLives(LivingDeathEvent event) {
-        LivingEntity livingEntity = event.getEntity();
-        if (livingEntity instanceof Player player) {
-            NecroPlayerDataCapability capability = NecroPlayerDataCapability.getCapability(livingEntity);
-            if (capability.getKakuzu() > 0) {
-                capability.decreaseKakuzuBuffLevel();
-                player.setHealth(player.getMaxHealth());
-                player.clearFire();
-                player.removeAllEffects();
-                player.setDeltaMovement(Vec3.ZERO);
-                player.fallDistance = 0;
-                player.setTicksFrozen(0);
-                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WITHER_SPAWN, SoundSource.PLAYERS, 0.5f, 0.75f);
-            } 
+    @Override
+    public CompoundTag getCorpseData() {
+        return corpseData;
+    }
+
+    @Override
+    public LivingEntity getCorpseEntity(Level level){
+        Optional<Entity> optionalEntity = EntityType.create(getCorpseData(), level);
+        if (optionalEntity.isPresent() && optionalEntity.get() instanceof LivingEntity livingEntity) {
+            return livingEntity;
         }
+        return null;
     }
 
-    private void decreaseKakuzuBuffLevel() {
+    @Override
+    public void setCorpseEntity(Player player, LivingEntity corpse){
+        CompoundTag nbtCompound = new CompoundTag();
+        nbtCompound.putString("id", corpse.getEncodeId());
+        corpse.save(nbtCompound);
+        setCorpseData(nbtCompound);
+        NecroPlayerHaulerDataCapability.syncTrackingAndSelf(player);
     }
 
-    private int getKakuzu() {
-        return 0;
+    @Override
+    public void setCorpseData(CompoundTag nbt) {
+        this.corpseData = nbt;
     }
 
-    public boolean getLich() {
-        return this.isLich;
-    }
-
-    private void setLich(boolean aBoolean) {
-        this.isLich = aBoolean;
+    public void clearCorpseData(Player player) {
+        this.corpseData = new CompoundTag();
+        NecroPlayerHaulerDataCapability.syncTrackingAndSelf(player);
     }
 
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.putBoolean(Constants.Nbt.IS_LICH, getLich());
+        nbt.put(Constants.Nbt.CORPSE_ENTITY, getCorpseData());
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        setLich(nbt.getBoolean(Constants.Nbt.IS_LICH));
+        setCorpseData(nbt.getCompound(Constants.Nbt.CORPSE_ENTITY));
+    }
+
+    @Override
+    public void setHeadVisible(boolean visible) {
+
+    }
+
+    @Override
+    public void setRArmVisible(boolean visible) {
+
+    }
+
+    @Override
+    public void setLArmVisible(boolean visible) {
+
+    }
+
+    @Override
+    public void setRLegVisible(boolean visible) {
+
+    }
+
+    @Override
+    public void setLLegVisible(boolean visible) {
+
     }
 
     //-----------------OBLIGATORY_PLAYER_IMPLEMENTATION-----------------
     public static void playerClone(PlayerEvent.Clone event) {
-        NecroPlayerDataCapability originalCapability = NecroPlayerDataCapability.getCapabilityOptional(event.getOriginal()).orElse(new NecroPlayerDataCapability());
-        NecroPlayerDataCapability capability = NecroPlayerDataCapability.getCapabilityOptional(event.getEntity()).orElse(new NecroPlayerDataCapability());
+        NecroPlayerHaulerDataCapability originalCapability = NecroPlayerHaulerDataCapability.getCapabilityOptional(event.getOriginal()).orElse(new NecroPlayerHaulerDataCapability());
+        NecroPlayerHaulerDataCapability capability = NecroPlayerHaulerDataCapability.getCapabilityOptional(event.getEntity()).orElse(new NecroPlayerHaulerDataCapability());
         capability.deserializeNBT(originalCapability.serializeNBT());
     }
 
@@ -135,15 +160,15 @@ public class NecroPlayerDataCapability implements LodestoneCapability {
     }
 
     public static void sync(Player player, PacketDistributor.PacketTarget target) {
-        getCapabilityOptional(player).ifPresent(c -> DogmaPackets.DOGMA_CHANNEL.send(target, new SyncNecroPlayerCapabilityDataPacket(player.getUUID(), c.serializeNBT())));
+        getCapabilityOptional(player).ifPresent(c -> DogmaPackets.DOGMA_CHANNEL.send(target, new SyncNecroPlayerHaulerCapabilityDataPacket(player.getUUID(), c.serializeNBT())));
     }
 
-    public static LazyOptional<NecroPlayerDataCapability> getCapabilityOptional(LivingEntity entity) {
+    public static LazyOptional<NecroPlayerHaulerDataCapability> getCapabilityOptional(LivingEntity entity) {
         return entity.getCapability(CAPABILITY);
     }
 
-    public static NecroPlayerDataCapability getCapability(LivingEntity entity) {
-        return entity.getCapability(CAPABILITY).orElse(new NecroPlayerDataCapability());
+    public static NecroPlayerHaulerDataCapability getCapability(LivingEntity entity) {
+        return entity.getCapability(CAPABILITY).orElse(new NecroPlayerHaulerDataCapability());
     }
     //----------END_OF_OBLIGATORY_PLAYER_IMPLEMENTATION-----------------
 

@@ -1,0 +1,13 @@
+{
+  "values": [
+    "minecraft:cow",
+    "minecraft:villager",
+    "minecraft:pillager",
+    "minecraft:sheep",
+    "minecraft:pig",
+    "minecraft:piglin",
+    "minecraft:piglin_brute",
+    "minecraft:chicken",
+    "minecraft:player"
+  ]
+}

@@ -2,6 +2,8 @@ package dev.sterner.dogma.api;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -18,26 +20,23 @@ public interface IHauler {
      *
      * @return corpse
      */
-    LivingEntity getCorpseLiving();
+    LivingEntity getCorpseEntity(Level level);
 
     /**
      * Gets the saved Nbt of the corpse
      *
      * @return nbt
      */
-    CompoundTag getCorpseEntity();
+    CompoundTag getCorpseData();
 
     /**
      * Sets the IHaulers corpse from a living entity
      *
-     * @param livingEntity to be corpse
+     * @param corpse to be corpse
      */
-    void setCorpseEntity(LivingEntity livingEntity);
+    void setCorpseEntity(Player player, LivingEntity corpse);
 
-    /**
-     * Clear alla corpse data
-     */
-    void clearCorpseData();
+    void setCorpseData(CompoundTag nbt);
 
     /**
      * @return boolean if the corpses head is visible

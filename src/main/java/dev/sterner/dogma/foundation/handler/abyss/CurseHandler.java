@@ -1,7 +1,6 @@
 package dev.sterner.dogma.foundation.handler.abyss;
 
 import dev.sterner.dogma.foundation.Constants;
-import dev.sterner.dogma.foundation.DogmaTags;
 import dev.sterner.dogma.foundation.abyss.curse.Curse;
 import dev.sterner.dogma.foundation.abyss.curse.CurseUtils;
 import dev.sterner.dogma.foundation.capability.abyss.AbyssLivingEntityDataCapability;
@@ -29,7 +28,7 @@ public class CurseHandler {
     public static void tick(LivingEvent.LivingTickEvent event) {
         LivingEntity livingEntity = event.getEntity();
 
-        if (!livingEntity.getType().is(DogmaTags.CURSE_SUSCEPTIBLE)) {
+        if (!livingEntity.getType().is(Constants.Tags.CURSE_SUSCEPTIBLE)) {
             return;
         }
 

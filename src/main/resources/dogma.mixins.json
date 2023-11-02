@@ -4,8 +4,12 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "dogma.refmap.json",
   "mixins": [
+    "LivingEntityMixin",
+    "MobMixin"
   ],
   "client": [
+    "client.EntityRenderDispatcherMixin",
+    "client.LivingEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

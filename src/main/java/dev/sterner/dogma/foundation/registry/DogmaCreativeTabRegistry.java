@@ -49,7 +49,7 @@ public interface DogmaCreativeTabRegistry {
         }
 
         if (event.getTabKey() == NECRO.getKey()) {
-
+            event.accept(DogmaItemRegistry.MEAT_CLEAVER);
         }
     }
 }

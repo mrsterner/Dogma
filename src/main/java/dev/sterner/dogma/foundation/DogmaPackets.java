@@ -7,6 +7,7 @@ import dev.sterner.dogma.foundation.networking.abyss.SyncAbyssLivingCapabilityDa
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroCorpseCapabilityDataPacket;
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroLivingCapabilityDataPacket;
 import dev.sterner.dogma.foundation.networking.necro.SyncNecroPlayerCapabilityDataPacket;
+import dev.sterner.dogma.foundation.networking.necro.SyncNecroPlayerHaulerCapabilityDataPacket;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -31,6 +32,7 @@ public class DogmaPackets {
         SyncNecroCorpseCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
         SyncNecroLivingCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
         SyncNecroPlayerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
+        SyncNecroPlayerHaulerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);
 
         //Core
         SyncPlayerCapabilityDataPacket.register(DOGMA_CHANNEL, index++);

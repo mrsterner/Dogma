@@ -1,6 +1,8 @@
 package dev.sterner.dogma.foundation.event;
 
 import dev.sterner.dogma.client.layer.abyss.CradleRenderLayer;
+import dev.sterner.dogma.client.layer.necro.ShoulderCropseFeatureRenderer;
+import dev.sterner.dogma.client.model.necro.entity.BagEntityModel;
 import dev.sterner.dogma.client.renderer.abyss.block.CurseWardingBoxBlockEntityRenderer;
 import dev.sterner.dogma.client.renderer.abyss.gui.hud.CurseHudRenderer;
 import dev.sterner.dogma.foundation.registry.DogmaBlockEntityTypeRegistry;
@@ -8,6 +10,7 @@ import dev.sterner.dogma.foundation.registry.DogmaParticleTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -37,6 +40,11 @@ public class DogmaClientSetupEvents {
     }
 
     @SubscribeEvent
+    public static void entityRender(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(BagEntityModel.LAYER_LOCATION, BagEntityModel::createBodyLayer);
+    }
+
+    @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(DogmaBlockEntityTypeRegistry.CURSE_WARDING_BOX.get(), CurseWardingBoxBlockEntityRenderer::new);
     }
@@ -48,11 +56,14 @@ public class DogmaClientSetupEvents {
 
     @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.AddLayers event) {
-        for (Map.Entry<EntityType<?>, EntityRenderer<?>> entry : Minecraft.getInstance().getEntityRenderDispatcher().renderers.entrySet()) {
-            EntityRenderer<?> render = entry.getValue();
-            if (render instanceof MobRenderer livingRenderer) {
+        event.getSkins().forEach(skin -> {
+            EntityRenderer<?> renderer = event.getSkin(skin);
+            if (renderer instanceof MobRenderer livingRenderer) {
                 livingRenderer.addLayer(new CradleRenderLayer<>(livingRenderer));
             }
-        }
+            if (renderer instanceof PlayerRenderer playerRenderer) {
+                playerRenderer.addLayer(new ShoulderCropseFeatureRenderer<>(playerRenderer, event.getEntityModels(), event.getContext().getEntityRenderDispatcher()));
+            }
+        });
     }
 }

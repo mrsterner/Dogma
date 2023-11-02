@@ -56,7 +56,7 @@ public class BaseButcherBlockEntity extends HaulerBlockEntity {
         ContainerHelper.saveAllItems(nbt, outputs);
         DogmaUtils.writeChancesNbt(nbt, chances);
         if (!storedCorpseNbt.isEmpty()) {
-            nbt.put(Constants.Nbt.CORPSE_ENTITY, getCorpseEntity());
+            nbt.put(Constants.Nbt.CORPSE_ENTITY, getCorpseData());
         }
         nbt.putBoolean(Constants.Nbt.REFRESH, this.resetRecipe);
     }
@@ -71,12 +71,12 @@ public class BaseButcherBlockEntity extends HaulerBlockEntity {
     }
 
     @Override
-    public LivingEntity getCorpseLiving() {
+    public LivingEntity getCorpseEntity(Level level) {
         return storedLiving;
     }
 
     @Override
-    public CompoundTag getCorpseEntity() {
+    public CompoundTag getCorpseData() {
         return storedCorpseNbt;
     }
 
@@ -91,15 +91,19 @@ public class BaseButcherBlockEntity extends HaulerBlockEntity {
     }
 
     @Override
-    public void setCorpseEntity(LivingEntity entity) {
+    public void setCorpseEntity(Player player, LivingEntity entity) {
         CompoundTag nbtCompound = new CompoundTag();
         nbtCompound.putString("id", entity.getEncodeId());
         entity.save(nbtCompound);
-        this.storedCorpseNbt = nbtCompound;
+        setCorpseData(nbtCompound);
         this.storedLiving = entity;
     }
 
     @Override
+    public void setCorpseData(CompoundTag nbt) {
+        this.storedCorpseNbt = nbt;
+    }
+
     public void clearCorpseData() {
         this.storedCorpseNbt = new CompoundTag();
         this.storedLiving = null;

@@ -44,7 +44,7 @@ public class HookBlock extends HorizontalDirectionalBlock implements EntityBlock
     @Override
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
         super.animateTick(pState, pLevel, pPos, pRandom);
-        if (pLevel.getBlockEntity(pPos) instanceof HookBlockEntity hookBlockEntity && !hookBlockEntity.getCorpseEntity().isEmpty() && hookBlockEntity.hookedAge < Constants.Values.BLEEDING) {
+        if (pLevel.getBlockEntity(pPos) instanceof HookBlockEntity hookBlockEntity && !hookBlockEntity.getCorpseData().isEmpty() && hookBlockEntity.hookedAge < Constants.Values.BLEEDING) {
             for (int i = 0; i < pRandom.nextInt(1) + 1; ++i) {
                 this.trySpawnDripParticles(pLevel, pPos, pState);
             }
@@ -134,7 +134,7 @@ public class HookBlock extends HorizontalDirectionalBlock implements EntityBlock
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        if (pLevel.getBlockEntity(pPos) instanceof HookBlockEntity hookBlockEntity && !hookBlockEntity.getCorpseEntity().isEmpty()) {
+        if (pLevel.getBlockEntity(pPos) instanceof HookBlockEntity hookBlockEntity && !hookBlockEntity.getCorpseData().isEmpty()) {
             return HOOKED_SHAPE;
         }
         return SHAPE;

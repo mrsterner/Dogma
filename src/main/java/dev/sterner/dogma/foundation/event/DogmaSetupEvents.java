@@ -6,6 +6,7 @@ import dev.sterner.dogma.foundation.capability.abyss.AbyssLivingEntityDataCapabi
 import dev.sterner.dogma.foundation.capability.necro.NecroCorpseDataCapability;
 import dev.sterner.dogma.foundation.capability.necro.NecroLivingEntityDataCapability;
 import dev.sterner.dogma.foundation.capability.necro.NecroPlayerDataCapability;
+import dev.sterner.dogma.foundation.capability.necro.NecroPlayerHaulerDataCapability;
 import dev.sterner.dogma.foundation.registry.DogmaParticleTypeRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,5 +23,6 @@ public class DogmaSetupEvents {
         PlayerDataCapability.registerCapabilities(event);
         NecroCorpseDataCapability.registerCapabilities(event);
         NecroLivingEntityDataCapability.registerCapabilities(event);
+        NecroPlayerHaulerDataCapability.registerCapabilities(event);
     }
 }

@@ -12,11 +12,9 @@ import net.minecraft.world.entity.player.Player;
 
 public class Constants {
 
-    public interface DataTrackers {
-        EntityDataAccessor<CompoundTag> PLAYER_CORPSE_ENTITY = SynchedEntityData.defineId(Player.class, EntityDataSerializers.COMPOUND_TAG);
-    }
-
     public interface Tags {
+        TagKey<EntityType<?>> CURSE_SUSCEPTIBLE = TagKey.create(Registries.ENTITY_TYPE, Dogma.id("curse_susceptible"));
+
         TagKey<EntityType<?>> BUTCHERABLE = TagKey.create(Registries.ENTITY_TYPE, Dogma.id("butcherable"));
         TagKey<EntityType<?>> CAGEABLE_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, Dogma.id("cageable_blacklist"));
 
@@ -125,6 +123,7 @@ public class Constants {
         String IS_SPECIAL = "IsSpecial";
         String SANITY = "Sanity";
         String ADVICE = "Advice";
+        String SHOULD_DIE = "ShouldDie";
     }
 
     public class Values {
