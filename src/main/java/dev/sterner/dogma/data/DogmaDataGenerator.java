@@ -11,11 +11,10 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.concurrent.CompletableFuture;
 
-@Mod.EventBusSubscriber(modid = Dogma.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+
 public class DogmaDataGenerator {
 
-    @SubscribeEvent
-    public void gatherData(GatherDataEvent event) {
+    public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();

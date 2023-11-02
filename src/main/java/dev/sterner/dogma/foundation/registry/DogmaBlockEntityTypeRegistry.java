@@ -4,9 +4,11 @@ import dev.sterner.dogma.Dogma;
 import dev.sterner.dogma.api.BookBlockEntity;
 import dev.sterner.dogma.api.SkullBlockEntity;
 import dev.sterner.dogma.content.block.necro.HookBlockEntity;
+import dev.sterner.dogma.content.block_entity.JarBlockEntity;
 import dev.sterner.dogma.content.block_entity.PedestalBlockEntity;
 import dev.sterner.dogma.content.block_entity.abyss.CurseWardingBoxBlockEntity;
 import dev.sterner.dogma.content.block_entity.necro.BrainBlockEntity;
+import dev.sterner.dogma.content.block_entity.necro.TabletBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -33,7 +35,13 @@ public interface DogmaBlockEntityTypeRegistry {
                     ).build(null)
             );
 
-
+    RegistryObject<BlockEntityType<JarBlockEntity>> JAR =
+            BLOCK_ENTITY_TYPES.register("jar",
+                    () -> BlockEntityType.Builder.of(
+                            JarBlockEntity::new,
+                            DogmaBlockRegistry.JAR.get()
+                    ).build(null)
+            );
 
     //end common
     //------------------------------------------------
@@ -69,6 +77,14 @@ public interface DogmaBlockEntityTypeRegistry {
                     () -> BlockEntityType.Builder.of(
                             HookBlockEntity::new,
                             DogmaBlockRegistry.HOOK_BLOCK.get(), DogmaBlockRegistry.METAL_HOOK_BLOCK.get()
+                    ).build(null)
+            );
+
+    RegistryObject<BlockEntityType<TabletBlockEntity>> TABLET =
+            BLOCK_ENTITY_TYPES.register("tablet",
+                    () -> BlockEntityType.Builder.of(
+                            TabletBlockEntity::new,
+                            DogmaBlockRegistry.EMERALD_TABLET.get()
                     ).build(null)
             );
     //end necro

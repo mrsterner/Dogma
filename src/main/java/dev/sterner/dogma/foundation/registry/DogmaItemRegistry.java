@@ -84,7 +84,7 @@ public interface DogmaItemRegistry {
     //RegistryObject<Item> CELLAR_KEY = ITEMS.register("cellar_key", () -> new CellarKeyItem(settings()));
     //RegistryObject<Item> CONTRACT = ITEMS.register("contract", () -> new ContractItem(settings()));
     RegistryObject<Item> PACKET = ITEMS.register("packet", () -> new Item(settings()));
-    RegistryObject<Item> CAGE = ITEMS.register("cage", () -> new CageItem(settings()));
+    //RegistryObject<Item> CAGE = ITEMS.register("cage", () -> new CageItem(settings()));
     RegistryObject<Item> HOOK = ITEMS.register("hook", () -> new Item(settings()));
     RegistryObject<Item> METAL_HOOK = ITEMS.register("metal_hook", () -> new Item(settings()));
     //RegistryObject<Item> OLD_LETTER = ITEMS.register("old_letter", () -> new OldLetterItem(settings()));

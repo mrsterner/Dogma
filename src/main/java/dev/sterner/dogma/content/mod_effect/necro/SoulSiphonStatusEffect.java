@@ -1,6 +1,5 @@
 package dev.sterner.dogma.content.mod_effect.necro;
 
-import dev.sterner.dogma.client.particle.OrbitParticleEffect;
 import dev.sterner.dogma.foundation.DogmaDamageSources;
 import dev.sterner.dogma.foundation.capability.necro.NecroLivingEntityDataCapability;
 import net.minecraft.server.level.ServerLevel;
@@ -52,7 +51,7 @@ public class SoulSiphonStatusEffect extends MobEffect {
             double y = living.getRandomY();
             double z = living.getRandomZ(0.25D);
 
-            if (world instanceof ServerLevel serverWorld) {
+            if (world instanceof ServerLevel serverWorld) {/*
                 serverWorld.sendParticles(new OrbitParticleEffect(1, 0, 0.25f,//TODO lodestone particle
                                 (float) capability.getRitualPos().x(),
                                 (float) capability.getRitualPos().y() + 1,
@@ -65,7 +64,9 @@ public class SoulSiphonStatusEffect extends MobEffect {
                         0,
                         0,
                         0);
+                        */
             }
+
 
             for (int i = 0; i < 4; i++) {
                 if (world instanceof ServerLevel serverWorld) {

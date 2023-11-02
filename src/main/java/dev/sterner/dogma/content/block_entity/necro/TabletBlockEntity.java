@@ -9,6 +9,6 @@ import team.lodestar.lodestone.systems.blockentity.LodestoneBlockEntity;
 
 public class TabletBlockEntity extends LodestoneBlockEntity {
     public TabletBlockEntity(BlockPos pos, BlockState state) {
-        super(DogmaBlockEntityTypeRegistry.TABLET, pos, state);
+        super(DogmaBlockEntityTypeRegistry.TABLET.get(), pos, state);
     }
 }

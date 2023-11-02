@@ -35,7 +35,7 @@ public class BookOfTheDeadItem extends BlockItem {
             if (cancelPlacement(level, player)) {
                 return InteractionResultHolder.success(player.getItemInHand(hand));
             }
-            BookOfTheDeadScreen.openScreen(player);
+            //BookOfTheDeadScreen.openScreen(player);
             player.swing(hand);
             return InteractionResultHolder.success(player.getItemInHand(hand));
         }
@@ -46,7 +46,7 @@ public class BookOfTheDeadItem extends BlockItem {
         BlockHitResult blockHitResult = getPlayerPOVHitResult(world, player, ClipContext.Fluid.SOURCE_ONLY);
         if (blockHitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos pos = blockHitResult.getBlockPos();
-            return world.getBlockState(pos).is(DogmaBlockRegistry.NECRO_TABLE);
+            return world.getBlockState(pos).is(DogmaBlockRegistry.NECRO_TABLE.get());
         }
         return false;
     }

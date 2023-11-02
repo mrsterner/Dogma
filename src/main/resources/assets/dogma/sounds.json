@@ -1,0 +1,8 @@
+{
+  "misc.item.item_beam": {
+    "sounds": [
+      "dogma:misc/item_beam"
+    ],
+    "subtitle": "dogma.subtitles.misc.item.item_beam"
+  }
+}

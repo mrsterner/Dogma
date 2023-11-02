@@ -2,11 +2,19 @@ package dev.sterner.dogma.content.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -21,36 +29,36 @@ public class RopeBlock extends Block {
 
     public RopeBlock(Properties settings) {
         super(settings);
-        this.stateManager.getDefaultState().with(ROPE, Rope.BOTTOM);
+        this.registerDefaultState(this.stateDefinition.any().setValue(ROPE, Rope.BOTTOM));
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return world.getBlockState(pos.up()).isSolidBlock(world, pos) || world.getBlockState(pos.up()).isOf(this);
+    public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
+        return pLevel.getBlockState(pPos.above()).isRedstoneConductor(pLevel, pPos) || pLevel.getBlockState(pPos.above()).is(this);
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
-        if (!state.canPlaceAt(world, pos)) {
-            world.breakBlock(pos, true);
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        if (!pState.canSurvive(pLevel, pPos)) {
+            pLevel.destroyBlock(pPos, true);
         }
     }
 
-    @Nullable
+    @org.jetbrains.annotations.Nullable
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(ROPE, Rope.BOTTOM);
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        return this.defaultBlockState().setValue(ROPE, Rope.BOTTOM);
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (direction == Direction.UP && !state.canPlaceAt(world, pos)) {
-            world.scheduleBlockTick(pos, this, 1);
+    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pPos, BlockPos pNeighborPos) {
+        if (pDirection == Direction.UP && !pState.canSurvive(pLevel, pPos)) {
+            pLevel.scheduleTick(pPos, this, 1);
         }
-        if (direction != Direction.DOWN || !neighborState.isOf(this) && !neighborState.isOf(this)) {
-            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        if (pDirection != Direction.DOWN || !pNeighborState.is(this) && !pNeighborState.is(this)) {
+            return super.updateShape(pState, pDirection, pNeighborState, pLevel, pPos, pNeighborPos);
         } else {
-            return this.copyState(state, this.getDefaultState());
+            return this.copyState(pState, this.defaultBlockState());
         }
     }
 
@@ -59,14 +67,14 @@ public class RopeBlock extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        boolean bl2 = state.get(ROPE) == Rope.MIDDLE;
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        boolean bl2 = pState.getValue(ROPE) == Rope.MIDDLE;
         return bl2 ? MIDDLE_SHAPE : BOTTOM_SHAPE;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(ROPE);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(ROPE);
     }
 
     public enum Rope implements StringRepresentable {
@@ -74,7 +82,7 @@ public class RopeBlock extends Block {
         BOTTOM;
 
         public String toString() {
-            return this.asString();
+            return this.getSerializedName();
         }
 
         @Override

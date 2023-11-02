@@ -1,158 +1,80 @@
 package dev.sterner.dogma.content.block;
 
+import dev.sterner.dogma.content.block_entity.JarBlockEntity;
+import dev.sterner.dogma.foundation.registry.DogmaBlockEntityTypeRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
+import team.lodestar.lodestone.systems.block.WaterLoggedEntityBlock;
 
-public class JarBlock extends BaseEntityBlock {
-    protected static final VoxelShape OPEN_SHAPE = VoxelShapes.union(
-            createCuboidShape(4, 0, 4, 12, 10, 5),
-            createCuboidShape(4, 0, 4, 5, 10, 12),
-            createCuboidShape(4, 0, 11, 12, 10, 12),
-            createCuboidShape(11, 0, 5, 12, 10, 12),
+public class JarBlock<T extends JarBlockEntity> extends WaterLoggedEntityBlock<T> {
+    protected static final VoxelShape OPEN_SHAPE = Shapes.or(
+            box(4, 0, 4, 12, 10, 5),
+            box(4, 0, 4, 5, 10, 12),
+            box(4, 0, 11, 12, 10, 12),
+            box(11, 0, 5, 12, 10, 12),
 
-            createCuboidShape(4.5, 12, 4.5, 11.5, 14, 5.5),
-            createCuboidShape(4.5, 12, 4.5, 5.5, 14, 11.5),
-            createCuboidShape(4.5, 12, 10.5, 11.5, 14, 11.5),
-            createCuboidShape(10.5, 12, 4.5, 11.5, 14, 11.5)
+            box(4.5, 12, 4.5, 11.5, 14, 5.5),
+            box(4.5, 12, 4.5, 5.5, 14, 11.5),
+            box(4.5, 12, 10.5, 11.5, 14, 11.5),
+            box(10.5, 12, 4.5, 11.5, 14, 11.5)
     );
 
-    protected static final VoxelShape CLOSED_SHAPE = VoxelShapes.union(createCuboidShape(5, 14, 5, 11, 16, 11));
-    public static final BooleanProperty OPEN = BooleanProperty.of("open");
+    protected static final VoxelShape CLOSED_SHAPE = Shapes.or(box(5, 14, 5, 11, 16, 11));
+    public static final BooleanProperty OPEN = BooleanProperty.create("open");
 
     public JarBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any().with(OPEN, false));
-    }
-
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return (tickerWorld, pos, tickerState, blockEntity) -> {
-            if (blockEntity instanceof JarBlockEntity be) {
-                be.tick(world, pos, state);
-            }
-        };
+        this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false));
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!world.isClient() && hand == Hand.MAIN_HAND) {
-            ItemStack stack = player.getMainHandStack();
-            if (world.getBlockEntity(pos) instanceof JarBlockEntity jarBlockEntity) {
-                if (stack.isEmpty()) {
-                    if (player.isSneaking()) {
-                        world.setBlockState(pos, state.with(OPEN, !state.get(OPEN)));
-                        world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.PLAYERS, 1, 0.5f);
-                    } else if (jarBlockEntity.hasBrain) {
-                        ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(BotDObjects.BRAIN));
-                        jarBlockEntity.hasBrain = false;
-                    }
-                    jarBlockEntity.markDirty();
-                    return ActionResult.CONSUME;
-                } else if (!state.get(OPEN)) {
-                    return ActionResult.PASS;
-                } else if (stack.isOf(Items.GLASS_BOTTLE) && !jarBlockEntity.hasBrain) {
-                    if (jarBlockEntity.liquidAmount >= 25 && !jarBlockEntity.getLiquidType(EMPTY)) {
-                        Item outStack = switch (jarBlockEntity.liquidType) {
-                            case BLOOD -> BotDObjects.BOTTLE_OF_BLOOD;
-                            case ACID -> BotDObjects.SULFURIC_ACID;
-                            default -> Items.POTION;
-                        };
-                        jarBlockEntity.liquidAmount = jarBlockEntity.liquidAmount - 25;
-                        handleBottle(jarBlockEntity, player, hand, outStack);
-                        if (jarBlockEntity.liquidAmount <= 0) {
-                            jarBlockEntity.setLiquidType(EMPTY);
-                            jarBlockEntity.markDirty();
-                        }
-
-                    }
-                } else if (stack.isOf(BotDObjects.BOTTLE_OF_BLOOD)) {
-                    if ((jarBlockEntity.getLiquidType(BLOOD) || jarBlockEntity.getLiquidType(EMPTY))) {
-                        if (jarBlockEntity.liquidAmount + 25 <= MAX_LIQUID) {
-                            jarBlockEntity.setLiquidType(BLOOD);
-                            jarBlockEntity.liquidAmount = jarBlockEntity.liquidAmount + 25;
-                            handleBottle(jarBlockEntity, player, hand, Items.GLASS_BOTTLE);
-                            return ActionResult.CONSUME;
-                        }
-                    }
-                } else if (stack.isOf(BotDObjects.SULFURIC_ACID)) {
-                    if ((jarBlockEntity.getLiquidType(ACID) || jarBlockEntity.getLiquidType(EMPTY))) {
-                        if (jarBlockEntity.liquidAmount + 25 <= MAX_LIQUID) {
-                            jarBlockEntity.setLiquidType(ACID);
-                            jarBlockEntity.liquidAmount = jarBlockEntity.liquidAmount + 25;
-                            handleBottle(jarBlockEntity, player, hand, Items.GLASS_BOTTLE);
-                            return ActionResult.CONSUME;
-                        }
-                    }
-                } else if (stack.isOf(Items.POTION) && PotionUtil.getPotion(stack) == Potions.WATER) {
-                    if ((jarBlockEntity.getLiquidType(WATER) || jarBlockEntity.getLiquidType(EMPTY))) {
-                        if (jarBlockEntity.liquidAmount + 25 <= MAX_LIQUID) {
-                            jarBlockEntity.setLiquidType(WATER);
-                            jarBlockEntity.liquidAmount = jarBlockEntity.liquidAmount + 25;
-                            handleBottle(jarBlockEntity, player, hand, Items.GLASS_BOTTLE);
-                            return ActionResult.CONSUME;
-                        }
-                    }
-                } else if (stack.isOf(BotDObjects.BRAIN.asItem()) || stack.isOf(BotDObjects.EYE)) {
-                    if (jarBlockEntity.liquidAmount == MAX_LIQUID && jarBlockEntity.getLiquidType(WATER)) {
-                        if (!jarBlockEntity.hasBrain) {
-                            jarBlockEntity.hasBrain = true;
-                            player.getMainHandStack().decrement(1);
-                            jarBlockEntity.markDirty();
-                            return ActionResult.CONSUME;
-                        }
-                    }
-                }
-            }
-        }
-        return super.onUse(state, world, pos, player, hand, hit);
-    }
-
-    public void handleBottle(JarBlockEntity jarBlockEntity, PlayerEntity player, Hand hand, Item item) {
-        player.world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.PLAYERS, 1, 0.5f);
-        BotDUtils.addItemToInventoryAndConsume(player, hand, item.getDefaultStack());
-        jarBlockEntity.markDirty();
-    }
-
-    @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof JarBlockEntity jarBlockEntity && jarBlockEntity.liquidAmount != 0) {
-            if (!world.isClient) {
+            if (!level.isClientSide) {
                 ItemStack itemStack = new ItemStack(this);
-                jarBlockEntity.writeNbtToStack(itemStack);
-                ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity);
+                jarBlockEntity.saveToItem(itemStack);
+                ItemEntity itemEntity = new ItemEntity(level, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+                itemEntity.setDefaultPickUpDelay();
+                level.addFreshEntity(itemEntity);
             }
         }
-        super.onBreak(world, pos, state, player);
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        ItemStack itemStack = super.getPickStack(world, pos, state);
-        world.getBlockEntity(pos, BotDBlockEntityTypes.JAR).ifPresent((blockEntity) -> {
-            blockEntity.writeNbtToStack(itemStack);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        ItemStack itemStack = super.getCloneItemStack(world, pos, state);
+        world.getBlockEntity(pos, DogmaBlockEntityTypeRegistry.JAR.get()).ifPresent((blockEntity) -> {
+            blockEntity.saveToItem(itemStack);
         });
         return itemStack;
     }
 
-    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new JarBlockEntity(pos, state);
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
+        super.createBlockStateDefinition(builder);
     }
 
-
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return state.get(OPEN) ? OPEN_SHAPE : VoxelShapes.union(CLOSED_SHAPE, OPEN_SHAPE);
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return pState.getValue(OPEN) ? OPEN_SHAPE : Shapes.or(CLOSED_SHAPE, OPEN_SHAPE);
     }
 }

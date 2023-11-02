@@ -1,0 +1,11 @@
+{
+  "values": [
+    "minecraft:villager",
+    "minecraft:zombie_villager",
+    "minecraft:player",
+    "minecraft:piglin",
+    "minecraft:piglin_brute",
+    "minecraft:zombified_piglin",
+    "minecraft:wandering_trader"
+  ]
+}

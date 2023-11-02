@@ -1,45 +1,63 @@
 package dev.sterner.dogma.content.block;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import dev.sterner.dogma.api.AbstractSkullBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public class WallSkullBlock extends AbstractSkullBlock {
 
-    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
             ImmutableMap.of(
                     Direction.NORTH,
-                    Block.createCuboidShape(4.0, 4.0, 8.0, 12.0, 12.0, 16.0),
+                    Block.box(4.0, 4.0, 8.0, 12.0, 12.0, 16.0),
                     Direction.SOUTH,
-                    Block.createCuboidShape(4.0, 4.0, 0.0, 12.0, 12.0, 8.0),
+                    Block.box(4.0, 4.0, 0.0, 12.0, 12.0, 8.0),
                     Direction.EAST,
-                    Block.createCuboidShape(0.0, 4.0, 4.0, 8.0, 12.0, 12.0),
+                    Block.box(0.0, 4.0, 4.0, 8.0, 12.0, 12.0),
                     Direction.WEST,
-                    Block.createCuboidShape(8.0, 4.0, 4.0, 16.0, 12.0, 12.0)
+                    Block.box(8.0, 4.0, 4.0, 16.0, 12.0, 12.0)
             )
     );
 
     public WallSkullBlock(SkullType type, Properties pProperties) {
         super(type, pProperties);
-        this.registerDefaultState(this.stateDefinition.any().with(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return FACING_TO_SHAPE.get(state.get(FACING));
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return FACING_TO_SHAPE.get(pState.getValue(FACING));
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        BlockState blockState = this.getDefaultState();
-        BlockView blockView = ctx.getWorld();
-        BlockPos blockPos = ctx.getBlockPos();
-        Direction[] directions = ctx.getPlacementDirections();
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        BlockState blockState = this.defaultBlockState();
+        var blockView = pContext.getLevel();
+        BlockPos blockPos = pContext.getClickedPos();
+        Direction[] directions = pContext.getNearestLookingDirections();
 
         for (Direction direction : directions) {
             if (direction.getAxis().isHorizontal()) {
                 Direction direction2 = direction.getOpposite();
-                blockState = blockState.with(FACING, direction2);
-                if (!blockView.getBlockState(blockPos.offset(direction)).canReplace(ctx)) {
+                blockState = blockState.setValue(FACING, direction2);
+                if (!blockView.getBlockState(blockPos.relative(direction)).canBeReplaced(pContext)) {
                     return blockState;
                 }
             }
@@ -49,17 +67,17 @@ public class WallSkullBlock extends AbstractSkullBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(FACING, rotation.rotate(state.get(FACING)));
+    public BlockState rotate(BlockState pState, Rotation pRotation) {
+        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
+    public BlockState mirror(BlockState pState, Mirror pMirror) {
+        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(FACING);
     }
 }

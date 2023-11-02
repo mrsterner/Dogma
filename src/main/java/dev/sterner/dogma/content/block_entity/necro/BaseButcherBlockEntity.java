@@ -36,11 +36,11 @@ public class BaseButcherBlockEntity extends HaulerBlockEntity {
     }
 
     public InteractionResult onUse(Level world, BlockState state, BlockPos pos, Player player, InteractionHand hand, double probability, double particleOffset, boolean isNeighbour) {
-
+        return InteractionResult.PASS;
     }
 
 
-            private void dismemberAtRandom(Level world) {
+    private void dismemberAtRandom(Level world) {
         int i = world.getRandom().nextInt(3);
         switch (i) {
             case 0 -> setLArmVisible(false);

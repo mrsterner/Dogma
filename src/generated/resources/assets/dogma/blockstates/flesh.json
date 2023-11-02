@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "variant=1": {
+      "model": "dogma:block/flesh"
+    },
+    "variant=2": {
+      "model": "dogma:block/flesh_1"
+    },
+    "variant=3": {
+      "model": "dogma:block/flesh_2"
+    }
+  }
+}

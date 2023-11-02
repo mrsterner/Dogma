@@ -1,113 +1,140 @@
 package dev.sterner.dogma.content.block;
 
+import dev.sterner.dogma.foundation.registry.DogmaItemRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 public class CandleWallBlock extends Block {
-    public static final IntProperty HEIGHT = IntProperty.of("height", 0, 4);
+    public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 4);
     public static final float[] PARTICLE_HEIGHT = {0, 10 / 16f, 13 / 16f, 15 / 16f, 17 / 16f};
     public static final float[] VOXEL_HEIGHT = {4, 8, 11, 13, 15};
 
     public CandleWallBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(
-                this.stateManager
-                        .getDefaultState()
-                        .with(Properties.LIT, false)
-                        .with(HEIGHT, 4)
-                        .with(Properties.HORIZONTAL_FACING, Direction.NORTH)
+        this.registerDefaultState(
+                this.stateDefinition
+                        .any()
+                        .setValue(BlockStateProperties.LIT, false)
+                        .setValue(HEIGHT, 4)
+                        .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
         );
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack handStack = player.getMainHandStack();
-        if (hand == Hand.MAIN_HAND) {
-            if (handStack.isOf(BotDObjects.FAT) || handStack.isOf(Items.HONEYCOMB)) {
-                if (!state.get(Properties.LIT) && state.get(HEIGHT) < 4) {
-                    world.setBlockState(pos, state.with(HEIGHT, state.get(HEIGHT) + 1));
-                    if (!player.isCreative()) {
-                        handStack.decrement(1);
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        ItemStack handStack = pPlayer.getMainHandItem();
+        if (pHand == InteractionHand.MAIN_HAND) {
+            if (handStack.is(DogmaItemRegistry.FAT.get()) || handStack.is(Items.HONEYCOMB)) {
+                if (!pState.getValue(BlockStateProperties.LIT) && pState.getValue(HEIGHT) < 4) {
+                    pLevel.setBlockAndUpdate(pPos, pState.setValue(HEIGHT, pState.getValue(HEIGHT) + 1));
+                    if (!pPlayer.isCreative()) {
+                        handStack.shrink(1);
                     }
-                    return ActionResult.CONSUME;
+                    return InteractionResult.CONSUME;
                 }
-            } else if (handStack.isEmpty() && state.get(Properties.LIT)) {
-                world.setBlockState(pos, state.with(Properties.LIT, false));
-                world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            } else if (handStack.isEmpty() && pState.getValue(BlockStateProperties.LIT)) {
+                pLevel.setBlockAndUpdate(pPos, pState.setValue(BlockStateProperties.LIT, false));
+                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-            } else if (state.get(HEIGHT) > 0 && (handStack.isOf(Items.FLINT_AND_STEEL) || handStack.isOf(Items.FIRE_CHARGE))) {
-                world.playSound(player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
-                world.setBlockState(pos, state.with(Properties.LIT, true), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                handStack.damage(1, player, p -> p.sendToolBreakStatus(hand));
-                return ActionResult.CONSUME;
+            } else if (pState.getValue(HEIGHT) > 0 && (handStack.is(Items.FLINT_AND_STEEL) || handStack.is(Items.FIRE_CHARGE))) {
+                pLevel.playSound(pPlayer, pPos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, pLevel.getRandom().nextFloat() * 0.4F + 0.8F);
+                pLevel.setBlock(pPos, pState.setValue(BlockStateProperties.LIT, true), Block.UPDATE_ALL | Block.UPDATE_ALL_IMMEDIATE);
+                pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos);
+                handStack.hurtAndBreak(1, pPlayer, p -> p.broadcastBreakEvent(pHand));
+                return InteractionResult.CONSUME;
             }
         }
-
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, VOXEL_HEIGHT[state.get(HEIGHT)], 10.0);
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return Block.box(6.0, 0.0, 6.0, 10.0, VOXEL_HEIGHT[pState.getValue(HEIGHT)], 10.0);
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        Direction direction = state.get(Properties.HORIZONTAL_FACING);
-        BlockPos blockPos = pos.offset(direction.getOpposite());
-        BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isSideSolidFullSquare(world, blockPos, direction);
+    public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
+        Direction direction = pState.getValue(BlockStateProperties.HORIZONTAL_FACING);
+        BlockPos blockPos = pPos.relative(direction.getOpposite());
+        BlockState blockState = pLevel.getBlockState(blockPos);
+        return blockState.isFaceSturdy(pLevel, blockPos, direction);
     }
 
     @Nullable
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        BlockState blockState = this.getDefaultState();
-        WorldView worldView = ctx.getWorld();
-        BlockPos blockPos = ctx.getBlockPos();
-        Direction[] directions = ctx.getPlacementDirections();
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        BlockState blockState = this.defaultBlockState();
+        var worldView = pContext.getLevel();
+        BlockPos blockPos = pContext.getClickedPos();
+        Direction[] directions = pContext.getNearestLookingDirections();
 
         for (Direction direction : directions) {
             if (direction.getAxis().isHorizontal()) {
                 Direction direction2 = direction.getOpposite();
-                blockState = blockState.with(Properties.HORIZONTAL_FACING, direction2);
-                if (blockState.canPlaceAt(worldView, blockPos)) {
+                blockState = blockState.setValue(BlockStateProperties.HORIZONTAL_FACING, direction2);
+                if (blockState.canSurvive(worldView, blockPos)) {
                     return blockState;
                 }
             }
         }
-
         return null;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        return direction.getOpposite() == state.get(Properties.HORIZONTAL_FACING) && !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : state;
+    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pPos, BlockPos pNeighborPos) {
+        return pDirection.getOpposite() == pState.getValue(BlockStateProperties.HORIZONTAL_FACING) && !pState.canSurvive(pLevel, pPos) ? Blocks.AIR.defaultBlockState() : pState;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.LIT, HEIGHT, Properties.HORIZONTAL_FACING);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(BlockStateProperties.LIT, HEIGHT, BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, RandomGenerator random) {
-        if (state.get(Properties.LIT) && state.get(HEIGHT) > 0) {
-            double d = (double) pos.getX() + 0.5;
-            double e = (double) pos.getY() + PARTICLE_HEIGHT[state.get(HEIGHT)];
-            double f = (double) pos.getZ() + 0.5;
-            world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
-            world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
+    public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
+        if (pState.getValue(BlockStateProperties.LIT) && pState.getValue(HEIGHT) > 0) {
+            double d = (double) pPos.getX() + 0.5;
+            double e = (double) pPos.getY() + PARTICLE_HEIGHT[pState.getValue(HEIGHT)];
+            double f = (double) pPos.getZ() + 0.5;
+            pLevel.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+            pLevel.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
         }
     }
 }

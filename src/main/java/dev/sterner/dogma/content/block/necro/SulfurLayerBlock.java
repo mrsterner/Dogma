@@ -1,6 +1,18 @@
 package dev.sterner.dogma.content.block.necro;
 
+import dev.sterner.dogma.foundation.registry.DogmaBlockRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class SulfurLayerBlock extends SnowLayerBlock {
     public SulfurLayerBlock(Properties pProperties) {
@@ -8,40 +20,40 @@ public class SulfurLayerBlock extends SnowLayerBlock {
     }
 
     @Override
-    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
-        if (state.isOf(this) && state.get(LAYERS) > 1) {
-            world.setBlockState(pos, state.with(LAYERS, state.get(LAYERS) - 1), Block.NOTIFY_ALL);
+    public void destroy(LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
+        if (pState.is(this) && pState.getValue(LAYERS) > 1) {
+            pLevel.setBlock(pPos, pState.setValue(LAYERS, pState.getValue(LAYERS) - 1), Block.UPDATE_ALL);
         }
-        super.onBroken(world, pos, state);
+        super.destroy(pLevel, pPos, pState);
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        BlockState blockState = world.getBlockState(pos.down());
-        return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || blockState.isOf(this) && blockState.get(LAYERS) == 8;
+    public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
+        BlockState blockState = pLevel.getBlockState(pPos.below());
+        return Block.isFaceFull(blockState.getCollisionShape(pLevel, pPos.below()), Direction.UP) || blockState.is(this) && blockState.getValue(LAYERS) == 8;
     }
 
     @Override
-    public boolean hasRandomTicks(BlockState state) {
+    public boolean isRandomlyTicking(BlockState pState) {
         return true;
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
-        boolean sulfur = world.getBlockState(pos.up()).isOf(BotDObjects.SULFUR_PILE);
-        if (world.getBlockState(pos.up()).isAir() || sulfur) {
+    public void randomTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        boolean sulfur = pLevel.getBlockState(pPos.above()).is(DogmaBlockRegistry.SULFUR_PILE.get());
+        if (pLevel.getBlockState(pPos.above()).isAir() || sulfur) {
             boolean bl = false;
-            for (Direction direction : Properties.HORIZONTAL_FACING.getValues()) {
-                if (world.getBlockState(pos.offset(direction)).isOf(Blocks.LAVA)) {
+            for (Direction direction : BlockStateProperties.HORIZONTAL_FACING.getPossibleValues()) {
+                if (pLevel.getBlockState(pPos.relative(direction)).is(Blocks.LAVA)) {
                     bl = true;
                     break;
                 }
             }
             if (bl) {
-                if (state.get(LAYERS) < MAX_LAYERS) {
-                    world.setBlockState(pos, BotDObjects.SULFUR_PILE.getDefaultState().with(LAYERS, MathHelper.clamp(1 + state.get(LAYERS), 1, 8)));
-                } else if (sulfur && world.getBlockState(pos.up()).get(LAYERS) <= 3) {
-                    world.setBlockState(pos.up(), BotDObjects.SULFUR_PILE.getDefaultState().with(LAYERS, 1 + world.getBlockState(pos.up()).get(LAYERS)));
+                if (pState.getValue(LAYERS) < SnowLayerBlock.MAX_HEIGHT) {
+                    pLevel.setBlockAndUpdate(pPos, DogmaBlockRegistry.SULFUR_PILE.get().defaultBlockState().setValue(LAYERS, Mth.clamp(1 + pState.getValue(LAYERS), 1, 8)));
+                } else if (sulfur && pLevel.getBlockState(pPos.above()).getValue(LAYERS) <= 3) {
+                    pLevel.setBlockAndUpdate(pPos.above(), DogmaBlockRegistry.SULFUR_PILE.get().defaultBlockState().setValue(LAYERS, 1 + pLevel.getBlockState(pPos.above()).getValue(LAYERS)));
                 }
             }
         }

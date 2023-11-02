@@ -1,6 +1,36 @@
 package dev.sterner.dogma.content.item.necro;
 
-import net.minecraft.world.item.Item;
+import dev.sterner.dogma.foundation.Constants;
+import dev.sterner.dogma.foundation.DogmaDamageSources;
+import dev.sterner.dogma.foundation.registry.DogmaItemRegistry;
+import dev.sterner.dogma.foundation.registry.DogmaMobEffects;
+import dev.sterner.dogma.foundation.util.ComponentUtils;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.UUID;
 
 public class SyringeItem extends Item {
     public SyringeItem(Properties pProperties) {
@@ -10,62 +40,46 @@ public class SyringeItem extends Item {
     private static final int MAX_USE_TIME = 32;
 
     @Override
-    public ActionResult useOn(ItemUsageContext context) {
-        ItemStack stack = context.getStack();
-        BlockPos blockPos = context.getBlockPos();
-        World world = context.getWorld();
-        BlockState state = world.getBlockState(blockPos);
-        if (state.isOf(BotDObjects.RETORT_FLASK_BLOCK) && world.getBlockEntity(blockPos) instanceof RetortFlaskBlockEntity blockEntity) {
-            if (blockEntity.getItems().get(0).getItem() instanceof StatusEffectItem statusEffectItem) {
-                writeStatusEffectNbt(stack, new StatusEffectInstance(statusEffectItem.getStatusEffect(), 20 * 60, 1));
-                blockEntity.reset();
-            }
-        }
-
-        return super.useOnBlock(context);
-    }
-
-    @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity) user : null;
-        if (playerEntity instanceof ServerPlayerEntity) {
-            Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity) playerEntity, stack);
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity user) {
+        Player playerEntity = user instanceof Player ? (Player) user : null;
+        if (playerEntity instanceof ServerPlayer) {
+            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) playerEntity, stack);
         }
         boolean emptySyringe = false;
 
-        if (!world.isClient && playerEntity != null) {
-            StatusEffectInstance instance = readStatusEffectNbt(stack);
+        if (!level.isClientSide && playerEntity != null) {
+            MobEffectInstance instance = readStatusEffectNbt(stack);
             if (instance != null) {
-                user.addStatusEffect(new StatusEffectInstance(instance));
-                playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-                if (!playerEntity.getAbilities().creativeMode) {
-                    stack.decrement(1);
+                user.addEffect(new MobEffectInstance(instance));
+                playerEntity.awardStat(Stats.ITEM_USED.get(this));
+                if (!playerEntity.getAbilities().instabuild) {
+                    stack.shrink(1);
                 }
                 emptySyringe = true;
-            } else if (stack.getOrCreateNbt().contains(Constants.Nbt.BLOOD)) {
-                NbtCompound nbt = stack.getSubNbt(Constants.Nbt.BLOOD);
+            } else if (stack.getOrCreateTag().contains(Constants.Nbt.BLOOD)) {
+                CompoundTag nbt = stack.getTagElement(Constants.Nbt.BLOOD);
                 if (nbt != null) {
-                    UUID uuid = nbt.getUuid(Constants.Nbt.UUID);
-                    if (uuid != playerEntity.getUuid()) {
-                        playerEntity.addStatusEffect(new StatusEffectInstance(BotDStatusEffects.SANGUINE, 20 * 20));
+                    UUID uuid = nbt.getUUID(Constants.Nbt.UUID);
+                    if (uuid != playerEntity.getUUID()) {
+                        playerEntity.addEffect(new MobEffectInstance(DogmaMobEffects.SANGUINE.get(), 20 * 20));
                     }
                 }
 
                 emptySyringe = true;
             } else {
-                NbtCompound nbt = new NbtCompound();
-                nbt.putString(Constants.Nbt.NAME, playerEntity.getEntityName());
-                nbt.putUuid(Constants.Nbt.UUID, playerEntity.getUuid());
-                stack.getOrCreateNbt().put(Constants.Nbt.BLOOD, nbt);
-                playerEntity.damage(BotDDamageTypes.getDamageSource(world, BotDDamageTypes.SANGUINE), 4f);
+                CompoundTag nbt = new CompoundTag();
+                nbt.putString(Constants.Nbt.NAME, playerEntity.getScoreboardName());
+                nbt.putUUID(Constants.Nbt.UUID, playerEntity.getUUID());
+                stack.getOrCreateTag().put(Constants.Nbt.BLOOD, nbt);
+                playerEntity.hurt(DogmaDamageSources.create(level, DogmaDamageSources.SANGUINE), 4f);
             }
             if (emptySyringe) {
-                if (!playerEntity.getAbilities().creativeMode) {
+                if (!playerEntity.getAbilities().instabuild) {
                     if (stack.isEmpty()) {
-                        return new ItemStack(BotDObjects.SYRINGE);
+                        return DogmaItemRegistry.SYRINGE.get().getDefaultInstance();
                     }
 
-                    playerEntity.getInventory().insertStack(new ItemStack(BotDObjects.SYRINGE));
+                    playerEntity.getInventory().add(DogmaItemRegistry.SYRINGE.get().getDefaultInstance());
                 }
             }
         }
@@ -73,74 +87,76 @@ public class SyringeItem extends Item {
     }
 
     @Nullable
-    public static StatusEffectInstance readStatusEffectNbt(ItemStack stack) {
-        if (stack.hasNbt() && stack.getOrCreateNbt().contains(Constants.Nbt.STATUS_EFFECT_INSTANCE)) {
-            NbtCompound nbt = stack.getSubNbt(Constants.Nbt.STATUS_EFFECT_INSTANCE);
+    public static MobEffectInstance readStatusEffectNbt(ItemStack stack) {
+        if (stack.hasTag() && stack.getOrCreateTag().contains(Constants.Nbt.STATUS_EFFECT_INSTANCE)) {
+            CompoundTag nbt = stack.getTagElement(Constants.Nbt.STATUS_EFFECT_INSTANCE);
             if (nbt != null) {
-                StatusEffect effect = Registries.STATUS_EFFECT.get(Identifier.tryParse(nbt.getString(Constants.Nbt.STATUS_EFFECT)));
+                MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.tryParse(nbt.getString(Constants.Nbt.STATUS_EFFECT)));
                 if (effect != null) {
-                    return new StatusEffectInstance(effect, nbt.getInt(Constants.Nbt.DURATION), nbt.getInt(Constants.Nbt.AMPLIFIER));
+                    return new MobEffectInstance(effect, nbt.getInt(Constants.Nbt.DURATION), nbt.getInt(Constants.Nbt.AMPLIFIER));
                 }
             }
         }
         return null;
     }
 
-    public static void writeStatusEffectNbt(ItemStack stack, StatusEffectInstance instance) {
-        NbtCompound nbt = new NbtCompound();
-        Identifier identifier = Registries.STATUS_EFFECT.getId(instance.getEffectType());
+    public static void writeStatusEffectNbt(ItemStack stack, MobEffectInstance instance) {
+        CompoundTag nbt = new CompoundTag();
+        ResourceLocation identifier = ForgeRegistries.MOB_EFFECTS.getKey(instance.getEffect());
         if (identifier != null) {
             nbt.putString(Constants.Nbt.STATUS_EFFECT, identifier.toString());
             nbt.putInt(Constants.Nbt.DURATION, instance.getDuration());
             nbt.putInt(Constants.Nbt.AMPLIFIER, instance.getAmplifier());
-            stack.getOrCreateNbt().put(Constants.Nbt.STATUS_EFFECT_INSTANCE, nbt);
+            stack.getOrCreateTag().put(Constants.Nbt.STATUS_EFFECT_INSTANCE, nbt);
         }
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getUseDuration(ItemStack stack) {
         return MAX_USE_TIME;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        return ItemUsage.consumeHeldItem(world, user, hand);
+    public InteractionResultHolder<ItemStack> use(Level level, Player user, InteractionHand hand) {
+        return ItemUtils.startUsingInstantly(level, user, hand);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        if (stack.getOrCreateNbt().contains(Constants.Nbt.BLOOD)) {
-            NbtCompound nbt = stack.getSubNbt(Constants.Nbt.BLOOD);
+    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        if (pStack.getOrCreateTag().contains(Constants.Nbt.BLOOD)) {
+            CompoundTag nbt = pStack.getTagElement(Constants.Nbt.BLOOD);
             if (nbt != null) {
                 String name = nbt.getString(Constants.Nbt.NAME);
-                String formattedName = TextUtils.capitalizeString(name);
-                tooltip.add(Text.literal(formattedName).setStyle(Style.EMPTY.withColor(0xAC0014)));
+                String formattedName = ComponentUtils.capitalizeString(name);
+                pTooltipComponents.add(Component.literal(formattedName).setStyle(Style.EMPTY.withColor(0xAC0014)));
             }
         }
 
-        if (stack.getOrCreateNbt().contains(Constants.Nbt.STATUS_EFFECT_INSTANCE)) {
-            StatusEffectInstance instance = readStatusEffectNbt(stack);
+        if (pStack.getOrCreateTag().contains(Constants.Nbt.STATUS_EFFECT_INSTANCE)) {
+            MobEffectInstance instance = readStatusEffectNbt(pStack);
             if (instance != null) {
-                StatusEffect statusEffect = instance.getEffectType();
+                MobEffect statusEffect = instance.getEffect();
 
-                MutableText mutableText = Text.translatable(instance.getTranslationKey());
+                MutableComponent mutableText = Component.translatable(instance.getDescriptionId());
                 if (instance.getAmplifier() > 0) {
-                    mutableText = Text.translatable("potion.withAmplifier", mutableText, Text.translatable("potion.potency." + instance.getAmplifier()));
+                    mutableText = Component.translatable("potion.withAmplifier", mutableText, Component.translatable("potion.potency." + instance.getAmplifier()));
                 }
 
                 if (!instance.endsWithin(20)) {
-                    mutableText = Text.translatable("potion.withDuration", mutableText, StatusEffectUtil.durationToString(instance, 1));
+                    mutableText = Component.translatable("potion.withDuration", mutableText, MobEffectUtil.formatDuration(instance, 1));
                 }
 
-                tooltip.add(mutableText.formatted(statusEffect.getType().getFormatting()));
+                pTooltipComponents.add(mutableText.withStyle(statusEffect.getCategory().getTooltipFormatting()));
             }
 
         }
-        super.appendTooltip(stack, world, tooltip, context);
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }
+
+
 }

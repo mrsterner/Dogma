@@ -62,7 +62,7 @@ public interface DogmaBlockRegistry {
 
     RegistryObject<Block> HOOK_BLOCK = BLOCKS.register("hook_block", () -> new HookBlock(BlockBehaviour.Properties.of(), false));
     RegistryObject<Block> METAL_HOOK_BLOCK = BLOCKS.register("metal_hook_block", () -> new HookBlock(BlockBehaviour.Properties.of(), true));
-    RegistryObject<Block> JAR = BLOCKS.register("jar", () -> new JarBlock(BlockBehaviour.Properties.of()));
+    RegistryObject<Block> JAR = BLOCKS.register("jar", () -> new JarBlock<>(BlockBehaviour.Properties.of()).setBlockEntity(DogmaBlockEntityTypeRegistry.JAR));
     RegistryObject<Block> NECRO_TABLE = BLOCKS.register("necro", () -> new NecroTableBlock(BlockBehaviour.Properties.of()));
     RegistryObject<Block> BUTCHER_TABLE = BLOCKS.register("butcher", () -> new ButcherBlock(BlockBehaviour.Properties.of()));
     RegistryObject<Block> PEDESTAL = BLOCKS.register("pedestal", () -> new PedestalBlock<>(BlockBehaviour.Properties.of()).setBlockEntity(DogmaBlockEntityTypeRegistry.ITEM_PEDESTAL));
