@@ -1,9 +1,11 @@
 package dev.sterner.dogma.data;
 
 import dev.sterner.dogma.Dogma;
+import dev.sterner.dogma.content.item.necro.BookOfTheDeadItem;
 import dev.sterner.dogma.foundation.registry.DogmaItemRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BookItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import team.lodestar.lodestone.systems.datagen.ItemModelSmithTypes;
@@ -28,7 +30,7 @@ public class DogmaItemModelProvider extends LodestoneItemModelProvider {
     protected void registerModels() {
         Set<Supplier<Item>> items = new HashSet<>(DogmaItemRegistry.ITEMS.getEntries());
 
-        items.removeIf(i -> i.get() instanceof BlockItem);
+        items.removeIf(i -> i.get() instanceof BlockItem && !(i.get() instanceof BookOfTheDeadItem));
 
         AbstractItemModelSmith.ItemModelSmithData data = new AbstractItemModelSmith.ItemModelSmithData(this, items::remove);
 

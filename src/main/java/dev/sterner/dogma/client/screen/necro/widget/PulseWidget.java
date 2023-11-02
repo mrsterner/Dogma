@@ -37,7 +37,7 @@ public class PulseWidget extends BotDWidget {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 
-        float pulseAlpha = (Mth.sin(hoverTick / 20f) + 1) / 2;
+        float pulseAlpha = (Mth.sin(hoverTick / 50f) + 1) / 2;
 
         boolean bl = this instanceof IInactiveButton ib && ib.isInactive();
 

@@ -29,17 +29,19 @@ public class DogmaLanguageProvider extends LanguageProvider {
         Set<RegistryObject<Block>> blocks = new HashSet<>(BLOCKS.getEntries());
         Set<RegistryObject<Item>> items = new HashSet<>(ITEMS.getEntries());
 
-        add("itemGroup.mineinabyss.main", "Mine in Abyss");
+        add("itemGroup.dogma_main", "Dogma");
+        add("itemGroup.dogma_abyss", "Abyss");
+        add("itemGroup.dogma_necro", "Necromancy");
 
         blocks.forEach(b -> {
-            String name = b.get().getDescriptionId().replaceFirst("block\\.mineinabyss\\.", "");
+            String name = b.get().getDescriptionId().replaceFirst("block\\.dogma\\.", "");
             name = makeProper(DataHelper.toTitleCase(name, "_"));
             add(b.get().getDescriptionId(), name);
         });
 
         DataHelper.takeAll(items, i -> i.get() instanceof BlockItem && !(i.get() instanceof ItemNameBlockItem));
         items.forEach(i -> {
-            String name = i.get().getDescriptionId().replaceFirst("item\\.mineinabyss\\.", "");
+            String name = i.get().getDescriptionId().replaceFirst("item\\.dogma\\.", "");
             name = makeProper(DataHelper.toTitleCase(name, "_"));
             add(i.get().getDescriptionId(), name);
         });

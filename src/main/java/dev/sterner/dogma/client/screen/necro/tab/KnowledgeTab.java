@@ -120,7 +120,8 @@ public class KnowledgeTab extends BookTab {
             RenderSystem.setShaderTexture(0, PARALLAX);
             //enableScissor((width - 192) / 4 - 16, 32, 272, 182);
             matrices.pushPose();
-            guiGraphics.enableScissor((width - 192) / 4 - 16, 32, 272, 182);
+
+            guiGraphics.enableScissor((width - 192) / 4 - 5, scissorY + 13, scissorWidth + (width - 192) / 4 - 5 - 61, scissorHeight + 1);
             matrices.translate(xOffset, yOffset, 0.0F);
 
             //drawTexture(guiGraphics, 0, 0, 300.0F, 200.0F, 2507, 1205, 2507, 1205);
